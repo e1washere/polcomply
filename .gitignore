@@ -18,3 +18,12 @@ build/
 
 # OS
 .DS_Store
+
+# Updated .gitignore
+*.log
+logs/
+.cache/
+coverage/
+.nyc_output/
+tmp/
+temp/
