@@ -1,5 +1,12 @@
 # PolComply - Automatyzacja e-faktur KSeF dla polskich firm
 
+![Project Status](https://img.shields.io/badge/status-active-brightgreen)
+![License](https://img.shields.io/badge/license-Proprietary-blue)
+![Build](https://github.com/e1washere/polcomply/actions/workflows/ci.yml/badge.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.x-blue?logo=typescript)
+
 PolComply to kompletna platforma SaaS automatyzująca obowiązkowe e-faktury KSeF dla małych i średnich przedsiębiorstw w Polsce.
 
 ## 🚀 Szybki start
