@@ -1,7 +1,13 @@
-"""Invoice model for FA(3) compliant invoices"""
+"""
+Invoice model for FA(3) compliant invoices
+
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE file for full terms.
+"""
 
 from sqlalchemy import Column, String, DateTime, JSON, Numeric, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.sqlite import UUID as SQLiteUUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from uuid import uuid4
@@ -12,8 +18,8 @@ from app.database import Base
 class Invoice(Base):
     __tablename__ = "invoices"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    company_id = Column(UUID(as_uuid=True), ForeignKey("companies.id"), nullable=False)
+    id = Column(SQLiteUUID(as_uuid=True), primary_key=True, default=uuid4)
+    company_id = Column(SQLiteUUID(as_uuid=True), ForeignKey("companies.id"), nullable=False)
     invoice_number = Column(String(100), nullable=False)
     issue_date = Column(DateTime, nullable=False)
     sale_date = Column(DateTime, nullable=False)
@@ -28,7 +34,7 @@ class Invoice(Base):
     ksef_upo = Column(Text, nullable=True)  # KSeF UPO (Unique Payment Order)
     ksef_error = Column(Text, nullable=True)  # KSeF error message
     validation_errors = Column(JSON, nullable=True)  # FA(3) validation errors
-    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    created_by = Column(SQLiteUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

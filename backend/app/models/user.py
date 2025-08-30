@@ -2,6 +2,7 @@
 
 from sqlalchemy import Column, String, DateTime, Boolean, Text
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.sqlite import UUID as SQLiteUUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from uuid import uuid4
@@ -12,7 +13,7 @@ from app.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(SQLiteUUID(as_uuid=True), primary_key=True, default=uuid4)
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     first_name = Column(String(100), nullable=False)

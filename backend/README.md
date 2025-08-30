@@ -261,7 +261,15 @@ pre-commit run --all-files
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the **Business Source License 1.1 (BSL)**.
+
+**Key Terms:**
+- You may use this software for development, testing, and non-production purposes without restrictions
+- For production use, you may use the software for non-commercial purposes without payment
+- Commercial production use requires a separate commercial license from the licensor
+- On **August 30, 2029** (4 years from the license date), this license will automatically convert to the **GNU General Public License v3.0 (GPL-3.0)**
+
+For full license terms, see the [LICENSE](../LICENSE) file.
 
 ## 🤝 Contributing
 

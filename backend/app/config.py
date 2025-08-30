@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     
     # Database
-    DATABASE_URL: str = "postgresql://polcomply:secretpass@localhost:5432/polcomply"
+    DATABASE_URL: str = "sqlite:///./polcomply.db"
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

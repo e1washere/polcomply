@@ -2,6 +2,7 @@
 
 from sqlalchemy import Column, String, DateTime, JSON, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.sqlite import UUID as SQLiteUUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from uuid import uuid4
@@ -11,12 +12,12 @@ from app.database import Base
 class AuditLog(Base):
     __tablename__ = "audit_logs"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    company_id = Column(UUID(as_uuid=True), ForeignKey("companies.id"), nullable=True)
+    id = Column(SQLiteUUID(as_uuid=True), primary_key=True, default=uuid4)
+    user_id = Column(SQLiteUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    company_id = Column(SQLiteUUID(as_uuid=True), ForeignKey("companies.id"), nullable=True)
     action = Column(String(100), nullable=False)  # invoice.create, invoice.update, etc.
     entity_type = Column(String(50), nullable=False)  # invoice, company, user, etc.
-    entity_id = Column(UUID(as_uuid=True), nullable=True)
+    entity_id = Column(SQLiteUUID(as_uuid=True), nullable=True)
     changes = Column(JSON, nullable=True)  # What was changed
     ip_address = Column(String(45), nullable=True)  # IPv4 or IPv6
     user_agent = Column(Text, nullable=True)

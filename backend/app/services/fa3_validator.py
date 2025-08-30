@@ -1,4 +1,9 @@
-"""FA(3) invoice validation service"""
+"""
+FA(3) invoice validation service
+
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE file for full terms.
+"""
 
 import re
 from typing import List, Dict, Any, Optional

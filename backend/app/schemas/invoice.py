@@ -1,4 +1,9 @@
-"""Invoice Pydantic schemas for API validation"""
+"""
+Invoice Pydantic schemas for API validation
+
+Licensed under the Business Source License 1.1 (BSL).
+See LICENSE file for full terms.
+"""
 
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Dict, Any
