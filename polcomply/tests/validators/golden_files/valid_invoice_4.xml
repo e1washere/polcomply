@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="http://example.com/invoice">
+    <InvoiceNumber>FA/2024/004</InvoiceNumber>
+    <IssueDate>2024-01-18</IssueDate>
+    <Seller>
+        <Name>Tech Solutions</Name>
+        <NIP>5555555555</NIP>
+        <Address>
+            <Street>ul. Techniczna 15</Street>
+            <City>Katowice</City>
+            <PostalCode>40-001</PostalCode>
+        </Address>
+    </Seller>
+    <Buyer>
+        <Name>Enterprise Client</Name>
+        <NIP>6666666666</NIP>
+        <Address>
+            <Street>ul. Korporacyjna 20</Street>
+            <City>Szczecin</City>
+            <PostalCode>70-001</PostalCode>
+        </Address>
+    </Buyer>
+    <Items>
+        <Item>
+            <Name>Software License</Name>
+            <Quantity>5</Quantity>
+            <UnitPrice>200.00</UnitPrice>
+            <TotalPrice>1000.00</TotalPrice>
+        </Item>
+        <Item>
+            <Name>Implementation</Name>
+            <Quantity>1</Quantity>
+            <UnitPrice>5000.00</UnitPrice>
+            <TotalPrice>5000.00</TotalPrice>
+        </Item>
+    </Items>
+    <TotalAmount>6000.00</TotalAmount>
+</Invoice>
