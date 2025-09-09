@@ -1,0 +1,2 @@
+Numer faktury,Data wystawienia,Data sprzedaży,NIP sprzedawcy,Nazwa sprzedawcy,Ulica sprzedawcy,Miasto sprzedawcy,Kod pocztowy sprzedawcy,NIP nabywcy,Nazwa nabywcy,Ulica nabywcy,Miasto nabywcy,Kod pocztowy nabywcy,Nazwa pozycji,Ilość,Cena netto,Stawka VAT,Wartość netto,Wartość VAT,Wartość brutto,Suma netto,Suma VAT,Suma brutto
+FA/2024/002,2024-01-16,2024-01-16,1111111111,Minimal Company,ul. Minimalna 5,Gdańsk,80-001,2222222222,Minimal Client,ul. Klienta 10,Wrocław,50-001,Basic Service,1,500.00,23,500.00,115.00,615.00,500.00,115.00,615.00
