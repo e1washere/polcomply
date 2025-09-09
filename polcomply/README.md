@@ -1,0 +1,369 @@
+# PolComply SDK
+
+[![CI/CD Pipeline](https://github.com/e1washere/polcomply/actions/workflows/ci.yml/badge.svg)](https://github.com/e1washere/polcomply/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linting: ruff](https://img.shields.io/badge/linting-ruff-yellow.svg)](https://github.com/astral-sh/ruff)
+[![Type checking: mypy](https://img.shields.io/badge/type%20checking-mypy-blue.svg)](https://github.com/python/mypy)
+[![Coverage](https://codecov.io/gh/e1washere/polcomply/branch/main/graph/badge.svg)](https://codecov.io/gh/e1washere/polcomply)
+
+Polish KSeF compliance toolkit for FA-3 invoice validation and processing.
+
+## 🚀 Quick Start
+
+### Installation
+
+**Recommended: Using `uv` (fastest)**
+```bash
+uv add polcomply
+```
+
+**Alternative: Using `pipx` (isolated)**
+```bash
+pipx install polcomply
+```
+
+**Development: Using `pip`**
+```bash
+pip install -e ".[dev]"
+```
+
+### CLI Examples
+
+```bash
+# Validate FA-3 XML against XSD schema
+polcomply validate invoice.xml --schema schemas/FA-3.xsd
+
+# Convert CSV to FA-3 XML
+polcomply map csv-to-fa input.csv --output invoice.xml --schema schemas/FA-3.xsd
+
+# Show validation summary
+polcomply validate invoice.xml --schema schemas/FA-3.xsd --format summary
+
+# Verbose mapping with report
+polcomply map csv-to-fa data.csv --output invoice.xml --verbose
+```
+
+### Python API Examples
+
+```python
+from polcomply.validators.xsd import XSDValidator, ValidationError
+from polcomply.mapping.csv_to_fa import CSVToFAMapper, MappingError
+
+# XSD Validation
+validator = XSDValidator("schemas/FA-3.xsd")
+with open("invoice.xml", "rb") as f:
+    errors = validator.validate(f.read())
+
+if errors:
+    for error in errors:
+        print(f"Error: {error.message} (line {error.line})")
+else:
+    print("✅ XML is valid!")
+
+# CSV to FA-3 Mapping
+mapper = CSVToFAMapper("mapping/fa3.yaml")
+xml_content = mapper.process_csv("invoice.csv", "output.xml")
+print("✅ FA-3 XML generated!")
+```
+
+## 📋 Command Reference
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `polcomply validate <file>` | Validate XML against XSD | `polcomply validate invoice.xml --schema fa3.xsd` |
+| `polcomply map csv-to-fa <csv>` | Convert CSV to FA-3 XML | `polcomply map csv-to-fa data.csv --output invoice.xml` |
+| `polcomply map invoice <file>` | General invoice mapping | `polcomply map invoice data.csv --output invoice.xml` |
+| `polcomply map list` | List supported formats | `polcomply map list` |
+| `polcomply version` | Show version info | `polcomply version` |
+| `polcomply info` | Show system info | `polcomply info` |
+
+### Validation Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--schema` | XSD schema file path | Required |
+| `--format` | Output format (table/json/summary) | table |
+| `--verbose` | Show detailed information | False |
+| `--show-xml` | Display XML content | False |
+
+### Mapping Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--output` | Output XML file path | Required |
+| `--config` | Mapping configuration YAML | mapping/fa3.yaml |
+| `--schema` | XSD schema for validation | None |
+| `--validate` | Validate output XML | True |
+| `--verbose` | Show mapping report | False |
+
+## 🔧 How It Works
+
+### XSD Validation
+
+The SDK uses `lxml.etree.XMLSchema` for robust XML validation:
+
+```python
+# Core validation flow
+1. Load XSD schema → Parse XML document
+2. Validate against schema → Collect all errors
+3. Return detailed error list → No exceptions on first error
+```
+
+**Features:**
+- ✅ Complete error collection (not just first error)
+- ✅ Line/column position reporting
+- ✅ Error code classification
+- ✅ XML syntax + schema validation
+- ✅ No network dependencies
+
+### CSV to FA-3 Mapping
+
+Intelligent mapping from CSV/Excel to FA-3 XML:
+
+```python
+# Mapping pipeline
+1. Read CSV/Excel → Map columns to fields
+2. Validate data types → Check business rules
+3. Generate FA-3 XML → Validate output
+4. Report missing fields → Show mapping details
+```
+
+**Features:**
+- ✅ Flexible column mapping (YAML config)
+- ✅ Type validation (string, decimal, date, array)
+- ✅ Business rule validation (dates, VAT rates, amounts)
+- ✅ Missing field reporting
+- ✅ Support for all invoice types (VAT, KOREKTA, ZALICZKA, MPP)
+
+### SDK Architecture
+
+```
+polcomply/
+├── validators/          # XSD validation engine
+│   └── xsd.py          # Core validator with error collection
+├── mapping/            # CSV to FA-3 conversion
+│   ├── csv_to_fa.py   # Main mapper with validation
+│   └── fa3.yaml       # Field mapping configuration
+├── cli/               # Command-line interface
+│   ├── main.py        # Typer-based CLI
+│   └── commands/      # Individual commands
+└── tests/             # Comprehensive test suite
+    ├── validators/    # XSD validator tests
+    └── mapping/       # Mapping tests with golden files
+```
+
+**SDK Stubs:**
+- `auth/` - KSeF authentication (planned)
+- `transport/` - API communication (planned)
+- `client/` - High-level SDK client (planned)
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=polcomply --cov-report=html
+
+# Run specific test file
+pytest tests/validators/test_xsd.py
+
+# Run tests with golden files
+pytest tests/validators/test_xsd.py::TestGoldenFiles
+
+# Run mapping tests
+pytest tests/mapping/test_csv_to_fa.py
+```
+
+## 🔄 CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment:
+
+- **Lint & Format**: Black, Ruff, MyPy
+- **Testing**: pytest with coverage reporting
+- **Security**: Safety and Bandit scans
+- **Build**: Package building and validation
+- **CLI Tests**: Integration tests for command-line interface
+
+The pipeline runs on Python 3.11 and 3.12, ensuring compatibility across versions.
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+### Development Setup
+
+```bash
+# Clone repository
+git clone https://github.com/e1washere/polcomply.git
+cd polcomply
+
+# Install in development mode
+pip install -e ".[dev]"
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Code Quality
+
+**Pre-commit hooks** ensure code quality:
+- **Black**: Automatic code formatting
+- **Ruff**: Fast linting and import sorting
+- **MyPy**: Static type checking
+- **Tests**: Run tests before commit
+
+**Type Annotations:**
+- All public functions must have type hints
+- Use `typing` module for complex types
+- MyPy strict mode enabled
+
+**Testing Requirements:**
+- New features require tests
+- Maintain 85%+ test coverage
+- Use pytest fixtures for test data
+- Golden files for integration tests
+
+### Pull Request Process
+
+1. **Fork** the repository
+2. **Create** feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to branch (`git push origin feature/amazing-feature`)
+5. **Open** Pull Request
+
+**PR Requirements:**
+- ✅ All tests pass
+- ✅ Code coverage maintained
+- ✅ Type checking passes
+- ✅ Linting passes
+- ✅ Documentation updated
+
+## 📚 API Reference
+
+### XSDValidator
+
+```python
+class XSDValidator:
+    def __init__(self, schema_path: Path)
+    def validate(self, xml_bytes: bytes) -> List[ValidationError]
+    def validate_file(self, xml_path: Path) -> List[ValidationError]
+    def is_valid(self, xml_bytes: bytes) -> bool
+    def is_valid_file(self, xml_path: Path) -> bool
+    def get_schema_info(self) -> Dict[str, Any]
+```
+
+### CSVToFAMapper
+
+```python
+class CSVToFAMapper:
+    def __init__(self, config_path: Path)
+    def read_csv(self, csv_path: Path, **kwargs) -> pd.DataFrame
+    def map_columns(self, df: pd.DataFrame, column_mapping: Optional[Dict[str, str]] = None) -> pd.DataFrame
+    def validate_data(self, df: pd.DataFrame) -> List[MappingError]
+    def generate_xml(self, df: pd.DataFrame) -> str
+    def process_csv(self, csv_path: Path, output_path: Optional[Path] = None, column_mapping: Optional[Dict[str, str]] = None) -> str
+    def get_missing_fields_report(self, df: pd.DataFrame) -> Dict[str, List[Dict[str, Any]]]
+```
+
+### ValidationError
+
+```python
+class ValidationError(Exception):
+    def __init__(self, message: str, line: int | None = None, column: int | None = None, code: str | None = None)
+    def to_dict(self) -> Dict[str, Any]
+```
+
+### MappingError
+
+```python
+class MappingError(Exception):
+    def __init__(self, message: str, field: str | None = None, row: int | None = None)
+```
+
+## 🚧 Limitations & Roadmap
+
+### Current Limitations
+
+**XSD Validation:**
+- ⚠️ Requires local XSD schema files (no remote loading)
+- ⚠️ Limited to lxml-supported XSD features
+- ⚠️ Error log iteration may vary by lxml version
+
+**CSV Mapping:**
+- ⚠️ Single invoice per CSV file (no batch processing)
+- ⚠️ Basic business rule validation only
+- ⚠️ No support for complex nested structures
+- ⚠️ Limited Excel format support
+
+**CLI:**
+- ⚠️ No interactive mode
+- ⚠️ Limited output format options
+- ⚠️ No progress indicators for large files
+
+### Roadmap
+
+**Q1 2024:**
+- ✅ XSD validation engine
+- ✅ CSV to FA-3 mapping
+- ✅ CLI interface
+- ✅ Basic test coverage
+
+**Q2 2024:**
+- 🔄 KSeF API integration
+- 🔄 Authentication module
+- 🔄 Transport layer
+- 🔄 High-level SDK client
+
+**Q3 2024:**
+- 📋 Batch processing support
+- 📋 Advanced business rules
+- 📋 Interactive CLI mode
+- 📋 Plugin system
+
+**Q4 2024:**
+- 📋 Web interface
+- 📋 Database integration
+- 📋 Performance optimization
+- 📋 Enterprise features
+
+### Known Issues
+
+- **Test Coverage**: Currently at 59%, target is 85%
+- **Golden Files**: Some test fixtures need updating
+- **Type Stubs**: lxml error log iteration needs refinement
+- **CLI Entry Point**: Module import issues in some environments
+
+### Contributing to Roadmap
+
+We welcome contributions to any roadmap items! Please:
+
+1. **Check** existing issues and PRs
+2. **Discuss** major changes in issues first
+3. **Follow** the contributing guidelines
+4. **Update** documentation and tests
+
+## 📄 License
+
+This project is licensed under the Business Source License 1.1 (BSL) - see the [LICENSE](LICENSE) file for details.
+
+**Key Points:**
+- ✅ Free for non-commercial use
+- ✅ Commercial use requires license
+- ✅ Converts to GPL-3.0 after 4 years
+- ✅ Source code available
+
+## 🙏 Acknowledgments
+
+- **lxml** - Robust XML processing
+- **Typer** - Modern CLI framework
+- **Rich** - Beautiful terminal output
+- **pandas** - Data manipulation
+- **pytest** - Testing framework
+
+---
+
+**Made with ❤️ for Polish tax compliance**
