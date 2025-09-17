@@ -14,7 +14,7 @@ import logging
 
 from app.config import settings
 from app.database import engine, Base
-from app.routers import auth, invoices, vat, ai, companies
+from app.routers import auth, invoices, vat, ai, companies, validate
 from app.utils.logging import setup_logging
 
 # Setup logging
@@ -24,7 +24,24 @@ logger = logging.getLogger(__name__)
 # Create FastAPI app
 app = FastAPI(
     title="PolComply API",
-    description="Polish tax compliance and KSeF integration platform",
+    description="""
+    **Бесплатная проверка XML по FA-3** 🎯
+    
+    Проверьте соответствие ваших фактур требованиям польского электронного документооборота FA-3.
+    
+    ## Основные возможности:
+    - ✅ **Бесплатная валидация XML** по схеме FA-3
+    - 🔍 **Детальная проверка** всех полей и форматов
+    - 📊 **Отчет об ошибках** с указанием строк и столбцов
+    - 🚀 **Быстрая интеграция** через REST API
+    
+    ## Для бизнеса:
+    - Интеграция с KSeF (Krajowy System e-Faktur)
+    - Автоматизация налоговой отчетности
+    - Соответствие требованиям польского законодательства
+    
+    *Начните с бесплатной проверки ваших XML файлов!*
+    """,
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -47,6 +64,7 @@ if settings.ENVIRONMENT == "production":
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
 
 # Include routers
+app.include_router(validate.router)  # Free FA-3 validation (no prefix for easy access)
 app.include_router(auth.router, prefix="/v1/auth", tags=["Authentication"])
 app.include_router(companies.router, prefix="/v1/companies", tags=["Companies"])
 app.include_router(invoices.router, prefix="/v1/invoices", tags=["Invoices"])

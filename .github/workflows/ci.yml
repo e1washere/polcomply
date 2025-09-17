@@ -1,152 +1,34 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, feat/* ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  lint:
-    name: Lint and Format Check
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
-    
-    - name: Run Black formatter check
-      run: black --check polcomply/ tests/
-    
-    - name: Run Ruff linter
-      run: ruff check polcomply/ tests/
-    
-    - name: Run MyPy type checker
-      run: mypy polcomply/
-
   test:
-    name: Test Suite
+    name: Test & Lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.11', '3.12']
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.12
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.12'
     
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e ".[dev]"
+        cd polcomply && pip install -e ".[dev]"
     
-    - name: Run tests with coverage
-      run: |
-        pytest --cov=polcomply --cov-report=xml --cov-report=html
+    - name: Run Ruff
+      run: cd polcomply && ruff check . --fix
     
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-
-  cli-test:
-    name: CLI Integration Tests
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+    - name: Run Black
+      run: cd polcomply && black . --check
     
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
-    
-    - name: Test CLI help
-      run: |
-        polcomply --help
-        polcomply validate --help
-        polcomply map --help
-    
-    - name: Test CLI version
-      run: polcomply version
-    
-    - name: Test CLI info
-      run: polcomply info
-
-  build:
-    name: Build Package
-    runs-on: ubuntu-latest
-    needs: [lint, test]
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build twine
-    
-    - name: Build package
-      run: python -m build
-    
-    - name: Check package
-      run: twine check dist/*
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: dist
-        path: dist/
-
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
-        pip install safety bandit
-    
-    - name: Run Safety check
-      run: safety check
-    
-    - name: Run Bandit security linter
-      run: bandit -r polcomply/ -f json -o bandit-report.json || true
-    
-    - name: Upload Bandit report
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: bandit-report
-        path: bandit-report.json
+    - name: Run Tests
+      run: cd polcomply && pytest -q

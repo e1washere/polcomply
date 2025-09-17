@@ -169,7 +169,7 @@ class CSVToFAMapper:
                 except MappingError as e:
                     e.row = (
                         int(idx)
-                        if isinstance(idx, (int, str)) and str(idx).isdigit()
+                        if isinstance(idx, int | str) and str(idx).isdigit()
                         else None
                     )
                     errors.append(e)
@@ -206,7 +206,7 @@ class CSVToFAMapper:
                 date_format = field_config.get("format", "%Y-%m-%d")
                 if isinstance(value, str):
                     datetime.strptime(value, date_format)
-                elif isinstance(value, (datetime, date)):
+                elif isinstance(value, datetime | date):
                     pass  # Already a date
                 else:
                     raise MappingError(f"Expected date, got {type(value).__name__}")
@@ -214,7 +214,7 @@ class CSVToFAMapper:
                 raise MappingError(f"Invalid date format: '{value}'")
 
         elif field_type == "array":
-            if not isinstance(value, (list, tuple)):
+            if not isinstance(value, list | tuple):
                 raise MappingError(f"Expected array, got {type(value).__name__}")
 
     def _validate_business_rules(self, df: pd.DataFrame) -> list[MappingError]:
@@ -239,7 +239,7 @@ class CSVToFAMapper:
                                             "Issue date cannot be later than sale date",
                                             row=(
                                                 int(idx)
-                                                if isinstance(idx, (int, str))
+                                                if isinstance(idx, int | str)
                                                 and str(idx).isdigit()
                                                 else None
                                             ),
@@ -264,7 +264,7 @@ class CSVToFAMapper:
                                     field="item_vat_rate",
                                     row=(
                                         int(idx)
-                                        if isinstance(idx, (int, str))
+                                        if isinstance(idx, int | str)
                                         and str(idx).isdigit()
                                         else None
                                     ),
@@ -277,8 +277,7 @@ class CSVToFAMapper:
                                 field="item_vat_rate",
                                 row=(
                                     int(idx)
-                                    if isinstance(idx, (int, str))
-                                    and str(idx).isdigit()
+                                    if isinstance(idx, int | str) and str(idx).isdigit()
                                     else None
                                 ),
                             )
@@ -311,7 +310,7 @@ class CSVToFAMapper:
                 row,
                 (
                     int(idx)
-                    if isinstance(idx, (int, str)) and str(idx).isdigit()
+                    if isinstance(idx, int | str) and str(idx).isdigit()
                     else None
                 ),
             )
