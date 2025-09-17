@@ -14,11 +14,11 @@ class CompanyCreate(BaseModel):
     ksef_token: Optional[str] = Field(None, description="Token KSeF")
     ksef_environment: str = Field(default="sandbox", description="Środowisko KSeF")
 
-    @field_validator('nip')
+    @field_validator("nip")
     @classmethod
     def validate_nip(cls, v):
-        if not re.match(r'^\d{10}$', v):
-            raise ValueError('NIP musi składać się z dokładnie 10 cyfr')
+        if not re.match(r"^\d{10}$", v):
+            raise ValueError("NIP musi składać się z dokładnie 10 cyfr")
         return v
 
 

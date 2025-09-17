@@ -2,22 +2,22 @@
 
 from sqlalchemy import Column, String, DateTime, JSON, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.dialects.sqlite import UUID as SQLiteUUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from uuid import uuid4
+from typing import Optional
 from app.database import Base
 
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"
 
-    id = Column(SQLiteUUID(as_uuid=True), primary_key=True, default=uuid4)
-    user_id = Column(SQLiteUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    company_id = Column(SQLiteUUID(as_uuid=True), ForeignKey("companies.id"), nullable=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    company_id = Column(UUID(as_uuid=True), ForeignKey("companies.id"), nullable=True)
     action = Column(String(100), nullable=False)  # invoice.create, invoice.update, etc.
     entity_type = Column(String(50), nullable=False)  # invoice, company, user, etc.
-    entity_id = Column(SQLiteUUID(as_uuid=True), nullable=True)
+    entity_id = Column(UUID(as_uuid=True), nullable=True)
     changes = Column(JSON, nullable=True)  # What was changed
     ip_address = Column(String(45), nullable=True)  # IPv4 or IPv6
     user_agent = Column(Text, nullable=True)
@@ -27,12 +27,22 @@ class AuditLog(Base):
     user = relationship("User", back_populates="audit_logs")
 
     def __repr__(self):
-        return f"<AuditLog(id={self.id}, action='{self.action}', user_id={self.user_id})>"
+        return (
+            f"<AuditLog(id={self.id}, action='{self.action}', user_id={self.user_id})>"
+        )
 
 
-def create_audit_log(db, user_id: str, company_id: str = None, action: str = None, 
-                    entity_type: str = None, entity_id: str = None, changes: dict = None,
-                    ip_address: str = None, user_agent: str = None):
+def create_audit_log(
+    db,
+    user_id: str,
+    company_id: Optional[str] = None,
+    action: Optional[str] = None,
+    entity_type: Optional[str] = None,
+    entity_id: Optional[str] = None,
+    changes: Optional[dict] = None,
+    ip_address: Optional[str] = None,
+    user_agent: Optional[str] = None,
+):
     """Helper function to create audit log entries"""
     audit_log = AuditLog(
         user_id=user_id,
@@ -42,7 +52,7 @@ def create_audit_log(db, user_id: str, company_id: str = None, action: str = Non
         entity_id=entity_id,
         changes=changes,
         ip_address=ip_address,
-        user_agent=user_agent
+        user_agent=user_agent,
     )
     db.add(audit_log)
     db.commit()

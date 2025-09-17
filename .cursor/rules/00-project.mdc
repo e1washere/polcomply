@@ -1,0 +1,20 @@
+---
+description: Project‑wide rules for polcomply (KSeF validator/mapper/SDK)
+globs: *
+alwaysApply: true
+---
+
+# Architecture
+- Python 3.12+, структура пакетов: `polcomply/` (sdk/, validators/, mapping/, transport/), `examples/`, `tests/`.
+- Все новые функции покрывать unit‑тестами (pytest) с порогом покрытия 85%.
+- Придерживаться принципов: чистые функции, явные побочные эффекты, логирование на уровне use‑case.
+
+# Security
+- Не хранить секреты в репозитории. Переменные окружения через `.env` + pydantic‑settings. Шифрование локального хранилища ключей при необходимости.
+- Валидация входных данных строго до сетевых вызовов.
+
+# Style
+- Ruff + Black, mypy (strict), isort. Коммиты маленькими диффами.
+
+# GitHub Actions
+- Lint + Tests на PR; запрет merge без зелёного CI.
