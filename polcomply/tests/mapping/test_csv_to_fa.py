@@ -34,45 +34,45 @@ fields:
     type: "string"
     required: true
     description: "Numer faktury"
-    
+
   issue_date:
     xpath: "tns:DataWystawienia"
     type: "date"
     required: true
     format: "%Y-%m-%d"
     description: "Data wystawienia faktury"
-    
+
   seller_nip:
     xpath: "tns:Sprzedawca/tns:NIP"
     type: "string"
     required: true
     pattern: "^[0-9]{10}$"
     description: "NIP sprzedawcy"
-    
+
   seller_name:
     xpath: "tns:Sprzedawca/tns:Nazwa"
     type: "string"
     required: true
     description: "Nazwa sprzedawcy"
-    
+
   item_name:
     xpath: "tns:PozycjaFaktury/tns:Nazwa"
     type: "string"
     required: true
     description: "Nazwa pozycji"
-    
+
   item_quantity:
     xpath: "tns:PozycjaFaktury/tns:Ilosc"
     type: "decimal"
     required: true
     description: "Ilość"
-    
+
   item_net_price:
     xpath: "tns:PozycjaFaktury/tns:CenaJednostkowa"
     type: "decimal"
     required: true
     description: "Cena jednostkowa netto"
-    
+
   total_net_amount:
     xpath: "tns:Podsumowanie/tns:WartoscNetto"
     type: "decimal"

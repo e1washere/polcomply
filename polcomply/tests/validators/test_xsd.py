@@ -26,7 +26,7 @@ class TestXSDValidator:
            targetNamespace="http://example.com/invoice"
            xmlns:tns="http://example.com/invoice"
            elementFormDefault="qualified">
-    
+
     <xs:element name="Invoice">
         <xs:complexType>
             <xs:sequence>
@@ -39,7 +39,7 @@ class TestXSDValidator:
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:complexType name="PartyType">
         <xs:sequence>
             <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
@@ -47,7 +47,7 @@ class TestXSDValidator:
             <xs:element name="Address" type="tns:AddressType" minOccurs="1" maxOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
-    
+
     <xs:complexType name="AddressType">
         <xs:sequence>
             <xs:element name="Street" type="xs:string" minOccurs="1" maxOccurs="1"/>
@@ -55,13 +55,13 @@ class TestXSDValidator:
             <xs:element name="PostalCode" type="xs:string" minOccurs="1" maxOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
-    
+
     <xs:complexType name="ItemsType">
         <xs:sequence>
             <xs:element name="Item" type="tns:ItemType" minOccurs="1" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
-    
+
     <xs:complexType name="ItemType">
         <xs:sequence>
             <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
