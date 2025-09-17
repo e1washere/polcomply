@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Faktura xmlns="http://crd.gov.pl/wzor/2023/06/21/12348/">
+    <Naglowek>
+        <KodFormularza>
+            <Kod>FA</Kod>
+            <WersjaSchemy>1-0E</WersjaSchemy>
+        </KodFormularza>
+        <WariantFormularza>1</WariantFormularza>
+        <DataWystawienia>2024-01-15</DataWystawienia>
+        <MiejsceWystawienia>Warszawa</MiejsceWystawienia>
+        <DataSprzedazy>2024-01-15</DataSprzedazy>
+        <KodWaluty>PLN</KodWaluty>
+        <P_1>FV/2024/001</P_1>
+        <P_2>FV/2024/001</P_2>
+    </Naglowek>
+    
+    <Sprzedawca>
+        <DaneIdentyfikacyjne>
+            <NIP>123456789</NIP> <!-- BŁĄD: NIP za krótki (9 cyfr zamiast 10) -->
+            <Nazwa>Test Company Sp. z o.o.</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <Miejscowosc>Warszawa</Miejscowosc>
+            <KodPocztowy>00-001</KodPocztowy>
+            <Poczta>Warszawa</Poczta>
+        </Adres>
+    </Sprzedawca>
+    
+    <Nabywca>
+        <DaneIdentyfikacyjne>
+            <NIP>7792439665</NIP>
+            <Nazwa>Client Company Sp. z o.o.</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <Miejscowosc>Kraków</Miejscowosc>
+            <KodPocztowy>30-001</KodPocztowy>
+            <Poczta>Kraków</Poczta>
+        </Adres>
+    </Nabywca>
+    
+    <Pozycje>
+        <Pozycja>
+            <LpSprzedazy>1</LpSprzedazy>
+            <Nazwa>Test Product</Nazwa>
+            <Miara>szt.</Miara>
+            <Ilosc>2</Ilosc>
+            <CenaJednostkowa>100.00</CenaJednostkowa>
+            <WartoscNetto>200.00</WartoscNetto>
+            <StawkaPodatku>23</StawkaPodatku>
+            <KwotaPodatku>46.00</KwotaPodatku>
+            <WartoscBrutto>246.00</WartoscBrutto>
+        </Pozycja>
+    </Pozycje>
+    
+    <Podsumowanie>
+        <LiczbaPozycji>1</LiczbaPozycji>
+        <WartoscNetto>200.00</WartoscNetto>
+        <KwotaPodatku>46.00</KwotaPodatku>
+        <WartoscBrutto>246.00</WartoscBrutto>
+    </Podsumowanie>
+</Faktura>

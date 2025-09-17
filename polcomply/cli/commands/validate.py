@@ -13,6 +13,7 @@ from rich.syntax import Syntax
 from rich.table import Table
 
 from polcomply.validators.xsd import ValidationError, XSDValidator
+from polcomply.reporting.html_report import generate_html_report
 
 console = Console()
 
@@ -29,6 +30,9 @@ def validate_invoice(
     schema: Path = typer.Option(..., "--schema", "-s", help="Path to XSD schema file"),
     output_format: str = typer.Option(
         "table", "--format", "-f", help="Output format: table, json, summary"
+    ),
+    report: Path = typer.Option(
+        None, "--report", "-r", help="Path to save HTML report"
     ),
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Show detailed error information"
@@ -48,6 +52,11 @@ def validate_invoice(
         validator = XSDValidator(schema)
         errors = validator.validate_file(xml_file)
 
+        # Generate HTML report if requested
+        if report:
+            html_content = generate_html_report(errors, str(xml_file.name), report)
+            console.print(f"[green]✓[/green] HTML report saved to: {report}")
+        
         if output_format == "json":
             _output_json(errors, xml_file)
         elif output_format == "summary":
