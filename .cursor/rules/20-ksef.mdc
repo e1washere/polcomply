@@ -1,0 +1,11 @@
+---
+description: KSeF domain rules (FA‑3), validator/mapper/SDK
+alwaysApply: false
+globs:
+  - "polcomply/**/*.py"
+  - "schemas/**/*.xsd"
+---
+- Валидатор XML обязан проверять соответствие XSD FA‑3 и бизнес‑правилам (минимальный набор).
+- Маппер CSV/Excel→FA‑3 конфигурируемый (`mapping/*.yaml`), проверка типов и обязательных полей.
+- SDK: интерфейсы `authenticate()`, `refresh()`, `sign()`, `send()`, `poll_status()`, `download_upo()` с таймаутами/повторами/логированием.
+- Режим деградации: офлайн‑буфер для неотправленных документов, последующая повторная отправка.

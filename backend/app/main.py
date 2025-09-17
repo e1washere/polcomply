@@ -11,7 +11,6 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 import logging
-import os
 
 from app.config import settings
 from app.database import engine, Base
@@ -29,7 +28,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
 )
 
 # Add middleware
@@ -45,10 +44,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(SessionMiddleware, secret_key=settings.JWT_SECRET)
 
 if settings.ENVIRONMENT == "production":
-    app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=settings.ALLOWED_HOSTS
-    )
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
 
 # Include routers
 app.include_router(auth.router, prefix="/v1/auth", tags=["Authentication"])
@@ -57,6 +53,7 @@ app.include_router(invoices.router, prefix="/v1/invoices", tags=["Invoices"])
 app.include_router(vat.router, prefix="/v1/vat", tags=["VAT"])
 app.include_router(ai.router, prefix="/v1/ai", tags=["AI Assistant"])
 
+
 # Root endpoint
 @app.get("/")
 async def root():
@@ -64,17 +61,15 @@ async def root():
         "name": "PolComply API",
         "version": "1.0.0",
         "status": "running",
-        "docs": "/docs"
+        "docs": "/docs",
     }
+
 
 # Health check endpoint
 @app.get("/health")
 async def health_check():
-    return {
-        "status": "healthy",
-        "database": "connected",
-        "redis": "connected"
-    }
+    return {"status": "healthy", "database": "connected", "redis": "connected"}
+
 
 # Startup event
 @app.on_event("startup")
@@ -84,16 +79,14 @@ async def startup_event():
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables created/verified")
 
+
 # Shutdown event
 @app.on_event("shutdown")
 async def shutdown_event():
     logger.info("Shutting down PolComply API...")
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=settings.DEBUG
-    )
+
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=settings.DEBUG)

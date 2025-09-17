@@ -13,7 +13,9 @@ from app.utils.auth import create_access_token
 
 # Test database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -40,9 +42,9 @@ def db_session(test_db):
     connection = engine.connect()
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
-    
+
     yield session
-    
+
     session.close()
     transaction.rollback()
     connection.close()
@@ -65,7 +67,7 @@ def test_user(db_session):
         password_hash="hashed_password",
         first_name="Test",
         last_name="User",
-        role="accountant"
+        role="accountant",
     )
     db_session.add(user)
     db_session.commit()
@@ -83,8 +85,8 @@ def test_company(db_session):
             "street": "ul. Testowa 1",
             "city": "Warszawa",
             "postal_code": "00-001",
-            "country": "PL"
-        }
+            "country": "PL",
+        },
     )
     db_session.add(company)
     db_session.commit()
@@ -96,9 +98,7 @@ def test_company(db_session):
 def test_user_company(db_session, test_user, test_company):
     """Create user-company relationship"""
     user_company = UserCompany(
-        user_id=test_user.id,
-        company_id=test_company.id,
-        role="accountant"
+        user_id=test_user.id, company_id=test_company.id, role="accountant"
     )
     db_session.add(user_company)
     db_session.commit()

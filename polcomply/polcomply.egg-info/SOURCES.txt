@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+polcomply.egg-info/PKG-INFO
+polcomply.egg-info/SOURCES.txt
+polcomply.egg-info/dependency_links.txt
+polcomply.egg-info/entry_points.txt
+polcomply.egg-info/requires.txt
+polcomply.egg-info/top_level.txt

@@ -21,24 +21,28 @@ class InvoiceItemCreate(BaseModel):
     net_amount: Optional[Decimal] = None
     vat_amount: Optional[Decimal] = None
 
-    @field_validator('vat_rate')
+    @field_validator("vat_rate")
     @classmethod
     def validate_vat_rate(cls, v):
         allowed_rates = [0, 5, 8, 23]
         if v not in allowed_rates:
-            raise ValueError(f"Stawka VAT {v}% nie jest dozwolona. Dozwolone stawki: {allowed_rates}")
+            raise ValueError(
+                f"Stawka VAT {v}% nie jest dozwolona. Dozwolone stawki: {allowed_rates}"
+            )
         return v
 
 
 class ContractorAddress(BaseModel):
     street: str = Field(..., min_length=1, description="Ulica i numer")
     city: str = Field(..., min_length=1, description="Miasto")
-    postal_code: str = Field(..., pattern=r'^\d{2}-\d{3}$', description="Kod pocztowy w formacie XX-XXX")
+    postal_code: str = Field(
+        ..., pattern=r"^\d{2}-\d{3}$", description="Kod pocztowy w formacie XX-XXX"
+    )
     country: str = Field(default="PL", description="Kod kraju")
 
 
 class ContractorData(BaseModel):
-    nip: str = Field(..., pattern=r'^\d{10}$', description="NIP - 10 cyfr")
+    nip: str = Field(..., pattern=r"^\d{10}$", description="NIP - 10 cyfr")
     name: str = Field(..., min_length=1, description="Nazwa kontrahenta")
     address: ContractorAddress
 
@@ -50,14 +54,18 @@ class InvoiceCreate(BaseModel):
     sale_date: date = Field(..., description="Data sprzedaży")
     due_date: date = Field(..., description="Termin płatności")
     contractor_data: ContractorData
-    items: List[InvoiceItemCreate] = Field(..., min_length=1, description="Pozycje faktury")
+    items: List[InvoiceItemCreate] = Field(
+        ..., min_length=1, description="Pozycje faktury"
+    )
     payment_method: str = Field(..., description="Metoda płatności")
 
-    @field_validator('due_date')
+    @field_validator("due_date")
     @classmethod
     def validate_due_date(cls, v, info):
-        if 'issue_date' in info.data and v < info.data['issue_date']:
-            raise ValueError("Termin płatności nie może być wcześniejszy niż data wystawienia")
+        if "issue_date" in info.data and v < info.data["issue_date"]:
+            raise ValueError(
+                "Termin płatności nie może być wcześniejszy niż data wystawienia"
+            )
         return v
 
 
@@ -97,11 +105,17 @@ class ValidationError(BaseModel):
     code: str = Field(..., description="Kod błędu")
     message: str = Field(..., description="Komunikat błędu w języku polskim")
     fix_hint: str = Field(..., description="Wskazówka jak naprawić błąd")
-    severity: str = Field(default="error", description="Poziom ważności: error, warning, info")
+    severity: str = Field(
+        default="error", description="Poziom ważności: error, warning, info"
+    )
 
 
 class ValidationResult(BaseModel):
     is_valid: bool = Field(..., description="Czy faktura jest poprawna")
-    errors: List[ValidationError] = Field(default_factory=list, description="Lista błędów walidacji")
-    warnings: List[ValidationError] = Field(default_factory=list, description="Lista ostrzeżeń")
+    errors: List[ValidationError] = Field(
+        default_factory=list, description="Lista błędów walidacji"
+    )
+    warnings: List[ValidationError] = Field(
+        default_factory=list, description="Lista ostrzeżeń"
+    )
     invoice_data: Optional[Dict[str, Any]] = None
