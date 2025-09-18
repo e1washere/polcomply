@@ -13,7 +13,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from polcomply.mapping.csv_to_fa import CSVToFAMapper, MappingError
+from mapping.csv_to_fa import CSVToFAMapper, MappingError
 
 console = Console()
 
@@ -74,7 +74,7 @@ def map_csv_to_fa(
 
         # Validate against schema if provided
         if validate and schema_file and schema_file.exists():
-            from polcomply.validators.xsd import XSDValidator
+            from validators.xsd import XSDValidator
 
             validator = XSDValidator(schema_file)
             errors = validator.validate(xml_content.encode("utf-8"))
