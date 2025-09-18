@@ -13,8 +13,8 @@ from rich.syntax import Syntax
 from rich.table import Table
 
 from reporting.html_report import generate_html_report
-from validators.xsd import ValidationError, XSDValidator
 from validators.paths import resolve_fa3_schema
+from validators.xsd import ValidationError, XSDValidator
 
 console = Console()
 
@@ -28,7 +28,12 @@ validate_command = typer.Typer(
 @validate_command.command("invoice")
 def validate_invoice(
     xml_file: Path = typer.Argument(..., help="Path to XML invoice file"),
-    schema: Path = typer.Option(None, "--schema", "-s", help="Path to XSD schema file (auto-resolve FA-3 if not provided)"),
+    schema: Path = typer.Option(
+        None,
+        "--schema",
+        "-s",
+        help="Path to XSD schema file (auto-resolve FA-3 if not provided)",
+    ),
     output_format: str = typer.Option(
         "table", "--format", "-f", help="Output format: table, json, summary"
     ),
@@ -53,10 +58,12 @@ def validate_invoice(
         if schema is None:
             schema = resolve_fa3_schema()
             if schema is None:
-                console.print("[red]❌ FA-3 schema not found. Please provide --schema or place FA-3.xsd in schemas/[/red]")
+                console.print(
+                    "[red]❌ FA-3 schema not found. Please provide --schema or place FA-3.xsd in schemas/[/red]"
+                )
                 raise typer.Exit(1)
             console.print(f"[dim]Using auto-resolved schema: {schema}[/dim]")
-        
+
         # Validate XML file
         validator = XSDValidator(schema)
         errors = validator.validate_file(xml_file)
