@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolComply - Walidacja XML FA-3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .upload-area {
+            border: 3px dashed #3498db;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2980b9;
+            background-color: #f8f9fa;
+        }
+
+        .upload-area.dragover {
+            border-color: #27ae60;
+            background-color: #e8f5e8;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            color: #2c3e50;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .results.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .results.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .error-list {
+            margin-top: 15px;
+        }
+
+        .error-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #229954, #1e8449);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PolComply</h1>
+            <p>Darmowa walidacja XML FA-3</p>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">Przeciągnij plik XML tutaj</div>
+            <div class="upload-subtext">lub kliknij, aby wybrać plik</div>
+            <input type="file" id="fileInput" accept=".xml" />
+        </div>
+
+        <button class="btn" id="validateBtn" disabled>Waliduj XML</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Walidacja w toku...</p>
+        </div>
+
+        <div class="results" id="results">
+            <div id="resultContent"></div>
+        </div>
+
+        <div class="footer">
+            <p>PolComply v0.1.0 | <a href="/docs" target="_blank">API Documentation</a></p>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const validateBtn = document.getElementById('validateBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const resultContent = document.getElementById('resultContent');
+
+        let selectedFile = null;
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (file && file.type === 'text/xml' || file.name.endsWith('.xml')) {
+                selectedFile = file;
+                validateBtn.disabled = false;
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <div class="upload-text">Wybrany plik: ${file.name}</div>
+                    <div class="upload-subtext">Kliknij "Waliduj XML" aby kontynuować</div>
+                `;
+            } else {
+                alert('Proszę wybrać plik XML (.xml)');
+            }
+        }
+
+        // Validate button click
+        validateBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            validateBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/api/validate/xml', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                loading.style.display = 'none';
+                results.style.display = 'block';
+
+                if (data.ok) {
+                    results.className = 'results success';
+                    resultContent.innerHTML = `
+                        <h3>✅ Walidacja zakończona pomyślnie!</h3>
+                        <p><strong>Plik:</strong> ${data.filename}</p>
+                        <p><strong>Status:</strong> Zgodny z FA-3</p>
+                        <p><strong>Błędy:</strong> ${data.summary.total_errors}</p>
+                        <a href="#" class="download-btn" onclick="downloadReport('${data.filename}', ${JSON.stringify(data).replace(/"/g, '&quot;')})">Pobierz raport</a>
+                    `;
+                } else {
+                    results.className = 'results error';
+                    let errorHtml = `
+                        <h3>❌ Znaleziono błędy walidacji</h3>
+                        <p><strong>Plik:</strong> ${data.filename}</p>
+                        <p><strong>Status:</strong> Niezgodny z FA-3</p>
+                        <p><strong>Liczba błędów:</strong> ${data.summary.total_errors}</p>
+                        <div class="error-list">
+                    `;
+                    
+                    data.errors.forEach(error => {
+                        errorHtml += `
+                            <div class="error-item">
+                                <strong>Linia ${error.line}, Kolumna ${error.column}</strong><br>
+                                <strong>Kod:</strong> ${error.code}<br>
+                                <strong>Błąd:</strong> ${error.message}
+                            </div>
+                        `;
+                    });
+                    
+                    errorHtml += `
+                        </div>
+                        <a href="#" class="download-btn" onclick="downloadReport('${data.filename}', ${JSON.stringify(data).replace(/"/g, '&quot;')})">Pobierz raport</a>
+                    `;
+                    
+                    resultContent.innerHTML = errorHtml;
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                results.style.display = 'block';
+                results.className = 'results error';
+                resultContent.innerHTML = `
+                    <h3>❌ Błąd podczas walidacji</h3>
+                    <p>Wystąpił błąd: ${error.message}</p>
+                `;
+            }
+
+            validateBtn.disabled = false;
+        });
+
+        function downloadReport(filename, data) {
+            const reportData = JSON.parse(data);
+            const reportHtml = generateHtmlReport(reportData);
+            
+            const blob = new Blob([reportHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `raport_${filename.replace('.xml', '')}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function generateHtmlReport(data) {
+            const isCompliant = data.ok;
+            const statusText = isCompliant ? "ZGODNY" : "NIEZGODNY";
+            const statusClass = isCompliant ? "compliant" : "non-compliant";
+            const statusColor = isCompliant ? "#27ae60" : "#e74c3c";
+
+            let errorsHtml = "";
+            if (data.errors && data.errors.length > 0) {
+                errorsHtml = `
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Linia</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Kolumna</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Kod</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Błąd</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.errors.forEach(error => {
+                    errorsHtml += `
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${error.line || '-'}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${error.column || '-'}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${error.code || '-'}</td>
+                            <td style="border: 1px solid #ddd; padding: 12px;">${error.message}</td>
+                        </tr>
+                    `;
+                });
+                
+                errorsHtml += "</tbody></table>";
+            } else {
+                errorsHtml = "<p style='text-align: center; padding: 20px; font-size: 1.2em; color: #555;'>Brak błędów. Dokument jest zgodny z FA-3!</p>";
+            }
+
+            return `
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raport walidacji - ${data.filename}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); overflow: hidden; }
+        .header { background-color: #2c3e50; color: #ffffff; padding: 25px 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 2.2em; }
+        .header p { margin: 5px 0 0; font-size: 1.1em; opacity: 0.9; }
+        .status-banner { padding: 15px 20px; text-align: center; font-size: 1.3em; font-weight: bold; color: #fff; background-color: ${statusColor}; }
+        .report-info { padding: 20px 30px; border-bottom: 1px solid #eee; }
+        .report-info h2 { color: #2c3e50; font-size: 1.6em; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0; }
+        .report-info p { margin: 8px 0; line-height: 1.6; }
+        .errors-section { padding: 20px 30px; }
+        .errors-section h2 { color: #2c3e50; font-size: 1.6em; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0; }
+        .footer { background-color: #2c3e50; color: #ffffff; text-align: center; padding: 20px 30px; font-size: 0.9em; opacity: 0.8; }
+        .footer a { color: #ffffff; text-decoration: none; border-bottom: 1px dotted; }
+        .footer a:hover { border-bottom: 1px solid; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PolComply - Raport Walidacji</h1>
+            <p>Analiza pliku: ${data.filename}</p>
+        </div>
+        <div class="status-banner">
+            STATUS: ${statusText}
+        </div>
+        <div class="report-info">
+            <h2>Informacje o raporcie</h2>
+            <p><strong>Plik:</strong> ${data.filename}</p>
+            <p><strong>Data raportu:</strong> ${new Date().toLocaleString('pl-PL')}</p>
+            <p><strong>Liczba błędów:</strong> ${data.summary.total_errors}</p>
+            <p><strong>Status zgodności:</strong> <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span></p>
+            <p><strong>Wersja schematu:</strong> ${data.summary.schema_version}</p>
+        </div>
+        <div class="errors-section">
+            <h2>Wyniki walidacji</h2>
+            ${errorsHtml}
+        </div>
+        <div class="footer">
+            <p>Wygenerowano przez PolComply v0.1.0 | <a href="https://polcomply.pl">polcomply.pl</a></p>
+        </div>
+    </div>
+</body>
+</html>
+            `;
+        }
+    </script>
+</body>
+</html>
