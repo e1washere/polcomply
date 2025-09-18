@@ -33,7 +33,7 @@ app.add_typer(map_command, name="map", help="Map invoice data between formats")
 def version():
     """Show version information"""
     try:
-        from polcomply import __version__
+        from __init__ import __version__
 
         console.print(f"PolComply SDK v{__version__}")
     except ImportError:

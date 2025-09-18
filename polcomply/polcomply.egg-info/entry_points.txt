@@ -1,2 +1,2 @@
 [console_scripts]
-polcomply = polcomply.cli.main:app
+polcomply = cli.main:app
