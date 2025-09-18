@@ -83,8 +83,9 @@ async def validate_xml(file: UploadFile):
 @router.get("/health")
 async def health_check():
     """Health check endpoint"""
+    schema_path = resolve_fa3_schema()
     return {
         "status": "healthy",
         "service": "FA-3 XML Validator",
-        "schema_available": SCHEMA.exists()
+        "schema_available": schema_path is not None and schema_path.exists()
     }
