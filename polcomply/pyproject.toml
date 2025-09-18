@@ -43,7 +43,7 @@ dev = [
 ]
 
 [project.scripts]
-polcomply = "cli.main:app"
+polcomply = "polcomply.cli.main:app"
 
 [project.urls]
 Homepage = "https://github.com/e1washere/polcomply"

@@ -49,6 +49,8 @@ class CSVToFAMapper:
         """
         self.config_path = config_path
         self.config = self._load_config()
+        if not isinstance(self.config, dict):
+            raise MappingError("Failed to load mapping config")
         self.namespaces = self.config.get("namespaces", {})
         self.fields = self.config.get("fields", {})
         self.csv_columns = self.config.get("csv_columns", {}).get("default_mapping", {})
@@ -83,6 +85,11 @@ class CSVToFAMapper:
             else:
                 df = pd.read_csv(csv_path, **kwargs)
 
+            # Convert string fields to string type to prevent pandas from auto-converting
+            for field_name, field_config in self.fields.items():
+                if field_config.get("type") == "string" and field_name in df.columns:
+                    df[field_name] = df[field_name].astype(str)
+
             logger.info(f"Loaded CSV with {len(df)} rows and {len(df.columns)} columns")
             return df
         except Exception as e:
@@ -111,6 +118,11 @@ class CSVToFAMapper:
         for field, column in field_to_column.items():
             if column in df_mapped.columns:
                 df_mapped = df_mapped.rename(columns={column: field})
+
+        # Convert string fields to string type to prevent pandas from auto-converting
+        for field_name, field_config in self.fields.items():
+            if field_config.get("type") == "string" and field_name in df_mapped.columns:
+                df_mapped[field_name] = df_mapped[field_name].astype(str)
 
         logger.info(f"Mapped {len(mapping)} columns")
         return df_mapped
@@ -197,6 +209,7 @@ class CSVToFAMapper:
 
         elif field_type == "decimal":
             try:
+                # Handle numpy types and convert to string first
                 Decimal(str(value))
             except (InvalidOperation, ValueError):
                 raise MappingError(f"Expected decimal number, got '{value}'")
