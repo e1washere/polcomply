@@ -12,9 +12,9 @@ from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table
 
-from reporting.html_report import generate_html_report
-from validators.paths import resolve_fa3_schema
-from validators.xsd import ValidationError, XSDValidator
+from polcomply.reporting.html_report import generate_html_report
+from polcomply.validators.paths import resolve_fa3_schema
+from polcomply.validators.xsd import ValidationError, XSDValidator
 
 console = Console()
 

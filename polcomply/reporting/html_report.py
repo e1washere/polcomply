@@ -3,7 +3,7 @@
 from datetime import datetime
 from pathlib import Path
 
-from validators.xsd import ValidationError
+from polcomply.validators.xsd import ValidationError
 
 
 def generate_html_report(

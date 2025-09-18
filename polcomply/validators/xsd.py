@@ -69,14 +69,15 @@ class XSDValidator:
 
         self.schema_path = schema_path
         self._schema: etree.XMLSchema | None = None
+        self._schema_doc: etree._ElementTree | None = None
         self._load_schema()
 
     def _load_schema(self) -> None:
         """Load and parse XSD schema"""
         try:
             # Parse XSD schema
-            schema_doc = etree.parse(str(self.schema_path))
-            self._schema = etree.XMLSchema(schema_doc)
+            self._schema_doc = etree.parse(str(self.schema_path))
+            self._schema = etree.XMLSchema(self._schema_doc)
             logger.info(f"XSD schema loaded successfully: {self.schema_path}")
         except etree.XMLSyntaxError as e:
             raise ValidationError(
@@ -206,14 +207,15 @@ class XSDValidator:
         Returns:
             Dictionary with schema information
         """
+        target_namespace = None
+        if self._schema_doc:
+            root = self._schema_doc.getroot()
+            target_namespace = root.get("targetNamespace")
+        
         return {
             "schema_path": str(self.schema_path),
             "schema_loaded": self._schema is not None,
-            "target_namespace": (
-                getattr(self._schema, "target_namespace", None)
-                if self._schema
-                else None
-            ),
+            "target_namespace": target_namespace,
         }
 
 

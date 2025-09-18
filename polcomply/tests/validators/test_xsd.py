@@ -15,13 +15,10 @@ from polcomply.validators.xsd import ValidationError, XSDValidator, validate_fax
 TEST_DATA_DIR = Path(__file__).parent / "golden_files"
 
 
-class TestXSDValidator:
-    """Test XSD validator functionality"""
-
-    @pytest.fixture
-    def sample_schema(self, tmp_path):
-        """Create a sample XSD schema for testing"""
-        schema_content = """<?xml version="1.0" encoding="UTF-8"?>
+@pytest.fixture
+def sample_schema(tmp_path):
+    """Create a sample XSD schema for testing"""
+    schema_content = """<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="http://example.com/invoice"
            xmlns:tns="http://example.com/invoice"
@@ -53,6 +50,7 @@ class TestXSDValidator:
             <xs:element name="Street" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="City" type="xs:string" minOccurs="1" maxOccurs="1"/>
             <xs:element name="PostalCode" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Country" type="xs:string" minOccurs="1" maxOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -70,16 +68,18 @@ class TestXSDValidator:
             <xs:element name="TotalPrice" type="xs:decimal" minOccurs="1" maxOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
+
 </xs:schema>"""
 
-        schema_path = tmp_path / "invoice.xsd"
-        schema_path.write_text(schema_content, encoding="utf-8")
-        return schema_path
+    schema_path = tmp_path / "invoice.xsd"
+    schema_path.write_text(schema_content, encoding="utf-8")
+    return schema_path
 
-    @pytest.fixture
-    def valid_xml(self):
-        """Valid XML invoice"""
-        return """<?xml version="1.0" encoding="UTF-8"?>
+
+@pytest.fixture
+def valid_xml():
+    """Valid XML invoice"""
+    return """<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="http://example.com/invoice">
     <InvoiceNumber>FA/2024/001</InvoiceNumber>
     <IssueDate>2024-01-15</IssueDate>
@@ -87,18 +87,20 @@ class TestXSDValidator:
         <Name>Test Company Sp. z o.o.</Name>
         <NIP>1234567890</NIP>
         <Address>
-            <Street>ul. Testowa 1</Street>
-            <City>Warszawa</City>
+            <Street>Test Street 123</Street>
+            <City>Warsaw</City>
             <PostalCode>00-001</PostalCode>
+            <Country>Poland</Country>
         </Address>
     </Seller>
     <Buyer>
-        <Name>Client Company</Name>
+        <Name>Buyer Company Ltd.</Name>
         <NIP>0987654321</NIP>
         <Address>
-            <Street>ul. Klienta 2</Street>
-            <City>Kraków</City>
+            <Street>Buyer Street 456</Street>
+            <City>Krakow</City>
             <PostalCode>30-001</PostalCode>
+            <Country>Poland</Country>
         </Address>
     </Buyer>
     <Items>
@@ -112,57 +114,32 @@ class TestXSDValidator:
     <TotalAmount>200.00</TotalAmount>
 </Invoice>""".encode()
 
-    @pytest.fixture
-    def invalid_xml_missing_element(self):
-        """Invalid XML - missing required element"""
-        return b"""<?xml version="1.0" encoding="UTF-8"?>
-<Invoice xmlns="http://example.com/invoice">
-    <InvoiceNumber>FA/2024/001</InvoiceNumber>
-    <IssueDate>2024-01-15</IssueDate>
-    <Seller>
-        <Name>Test Company Sp. z o.o.</Name>
-        <NIP>1234567890</NIP>
-        <Address>
-            <Street>ul. Testowa 1</Street>
-            <City>Warszawa</City>
-            <PostalCode>00-001</PostalCode>
-        </Address>
-    </Seller>
-    <!-- Missing Buyer element -->
-    <Items>
-        <Item>
-            <Name>Test Product</Name>
-            <Quantity>2</Quantity>
-            <UnitPrice>100.00</UnitPrice>
-            <TotalPrice>200.00</TotalPrice>
-        </Item>
-    </Items>
-    <TotalAmount>200.00</TotalAmount>
-</Invoice>"""
 
-    @pytest.fixture
-    def invalid_xml_wrong_type(self):
-        """Invalid XML - wrong data type"""
-        return """<?xml version="1.0" encoding="UTF-8"?>
+@pytest.fixture
+def invalid_xml_missing_element():
+    """Invalid XML invoice missing required element"""
+    return """<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="http://example.com/invoice">
     <InvoiceNumber>FA/2024/001</InvoiceNumber>
-    <IssueDate>invalid-date</IssueDate>
+    <!-- Missing IssueDate -->
     <Seller>
         <Name>Test Company Sp. z o.o.</Name>
         <NIP>1234567890</NIP>
         <Address>
-            <Street>ul. Testowa 1</Street>
-            <City>Warszawa</City>
+            <Street>Test Street 123</Street>
+            <City>Warsaw</City>
             <PostalCode>00-001</PostalCode>
+            <Country>Poland</Country>
         </Address>
     </Seller>
     <Buyer>
-        <Name>Client Company</Name>
+        <Name>Buyer Company Ltd.</Name>
         <NIP>0987654321</NIP>
         <Address>
-            <Street>ul. Klienta 2</Street>
-            <City>Kraków</City>
+            <Street>Buyer Street 456</Street>
+            <City>Krakow</City>
             <PostalCode>30-001</PostalCode>
+            <Country>Poland</Country>
         </Address>
     </Buyer>
     <Items>
@@ -175,6 +152,50 @@ class TestXSDValidator:
     </Items>
     <TotalAmount>200.00</TotalAmount>
 </Invoice>""".encode()
+
+
+@pytest.fixture
+def invalid_xml_wrong_type():
+    """Invalid XML invoice with wrong data type"""
+    return """<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="http://example.com/invoice">
+    <InvoiceNumber>FA/2024/001</InvoiceNumber>
+    <IssueDate>not-a-date</IssueDate>  <!-- Invalid date format -->
+    <Seller>
+        <Name>Test Company Sp. z o.o.</Name>
+        <NIP>1234567890</NIP>
+        <Address>
+            <Street>Test Street 123</Street>
+            <City>Warsaw</City>
+            <PostalCode>00-001</PostalCode>
+            <Country>Poland</Country>
+        </Address>
+    </Seller>
+    <Buyer>
+        <Name>Buyer Company Ltd.</Name>
+        <NIP>0987654321</NIP>
+        <Address>
+            <Street>Buyer Street 456</Street>
+            <City>Krakow</City>
+            <PostalCode>30-001</PostalCode>
+            <Country>Poland</Country>
+        </Address>
+    </Buyer>
+    <Items>
+        <Item>
+            <Name>Test Product</Name>
+            <Quantity>2</Quantity>
+            <UnitPrice>100.00</UnitPrice>
+            <TotalPrice>200.00</TotalPrice>
+        </Item>
+    </Items>
+    <TotalAmount>200.00</TotalAmount>
+</Invoice>""".encode()
+
+
+class TestXSDValidator:
+    """Test XSD validator functionality"""
+
 
     def test_validator_initialization(self, sample_schema):
         """Test validator initialization with valid schema"""
