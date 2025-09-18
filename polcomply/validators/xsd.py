@@ -211,7 +211,7 @@ class XSDValidator:
         if self._schema_doc:
             root = self._schema_doc.getroot()
             target_namespace = root.get("targetNamespace")
-        
+
         return {
             "schema_path": str(self.schema_path),
             "schema_loaded": self._schema is not None,
