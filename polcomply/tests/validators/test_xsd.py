@@ -79,7 +79,7 @@ def sample_schema(tmp_path):
 @pytest.fixture
 def valid_xml():
     """Valid XML invoice"""
-    return """<?xml version="1.0" encoding="UTF-8"?>
+    return b"""<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="http://example.com/invoice">
     <InvoiceNumber>FA/2024/001</InvoiceNumber>
     <IssueDate>2024-01-15</IssueDate>
@@ -112,13 +112,13 @@ def valid_xml():
         </Item>
     </Items>
     <TotalAmount>200.00</TotalAmount>
-</Invoice>""".encode()
+</Invoice>"""
 
 
 @pytest.fixture
 def invalid_xml_missing_element():
     """Invalid XML invoice missing required element"""
-    return """<?xml version="1.0" encoding="UTF-8"?>
+    return b"""<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="http://example.com/invoice">
     <InvoiceNumber>FA/2024/001</InvoiceNumber>
     <!-- Missing IssueDate -->
@@ -151,13 +151,13 @@ def invalid_xml_missing_element():
         </Item>
     </Items>
     <TotalAmount>200.00</TotalAmount>
-</Invoice>""".encode()
+</Invoice>"""
 
 
 @pytest.fixture
 def invalid_xml_wrong_type():
     """Invalid XML invoice with wrong data type"""
-    return """<?xml version="1.0" encoding="UTF-8"?>
+    return b"""<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="http://example.com/invoice">
     <InvoiceNumber>FA/2024/001</InvoiceNumber>
     <IssueDate>not-a-date</IssueDate>  <!-- Invalid date format -->
@@ -190,12 +190,11 @@ def invalid_xml_wrong_type():
         </Item>
     </Items>
     <TotalAmount>200.00</TotalAmount>
-</Invoice>""".encode()
+</Invoice>"""
 
 
 class TestXSDValidator:
     """Test XSD validator functionality"""
-
 
     def test_validator_initialization(self, sample_schema):
         """Test validator initialization with valid schema"""
