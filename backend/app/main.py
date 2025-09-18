@@ -9,6 +9,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from starlette.middleware.sessions import SessionMiddleware
 import logging
 
@@ -72,9 +74,16 @@ app.include_router(vat.router, prefix="/v1/vat", tags=["VAT"])
 app.include_router(ai.router, prefix="/v1/ai", tags=["AI Assistant"])
 
 
-# Root endpoint
+# Upload page (root endpoint)
 @app.get("/")
-async def root():
+async def upload_page():
+    """Serve the XML upload page"""
+    return FileResponse("static/upload.html")
+
+
+# API info endpoint
+@app.get("/api")
+async def api_info():
     return {
         "name": "PolComply API",
         "version": "1.0.0",
@@ -87,6 +96,10 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "database": "connected", "redis": "connected"}
+
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # Startup event
