@@ -12,8 +12,8 @@ from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table
 
-from polcomply.validators.xsd import ValidationError, XSDValidator
 from polcomply.reporting.html_report import generate_html_report
+from polcomply.validators.xsd import ValidationError, XSDValidator
 
 console = Console()
 
@@ -54,9 +54,9 @@ def validate_invoice(
 
         # Generate HTML report if requested
         if report:
-            html_content = generate_html_report(errors, str(xml_file.name), report)
+            generate_html_report(errors, str(xml_file.name), report)
             console.print(f"[green]✓[/green] HTML report saved to: {report}")
-        
+
         if output_format == "json":
             _output_json(errors, xml_file)
         elif output_format == "summary":
