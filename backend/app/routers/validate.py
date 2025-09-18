@@ -7,15 +7,12 @@ from pathlib import Path
 # Add polcomply to path
 sys.path.append(str(Path(__file__).parent.parent.parent.parent / "polcomply"))
 from validators.xsd import XSDValidator
-from pathlib import Path
+from validators.paths import resolve_fa3_schema
 import logging
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/validate", tags=["validate"])
-
-# Get the absolute path to the schema file
-SCHEMA = Path(__file__).parent.parent.parent / "schemas" / "FA-3.xsd"
 
 
 @router.post("/xml")
@@ -33,8 +30,10 @@ async def validate_xml(file: UploadFile):
             detail="Only XML files are accepted"
         )
     
-    if not SCHEMA.exists():
-        logger.error(f"FA-3 schema not found at {SCHEMA}")
+    # Auto-resolve FA-3 schema
+    schema_path = resolve_fa3_schema()
+    if schema_path is None:
+        logger.error("FA-3 schema not found")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="FA-3 schema not found"
@@ -42,7 +41,7 @@ async def validate_xml(file: UploadFile):
     
     try:
         # Initialize validator
-        validator = XSDValidator(SCHEMA)
+        validator = XSDValidator(schema_path)
         
         # Read uploaded file
         xml_content = await file.read()
