@@ -12,7 +12,49 @@ Polish KSeF compliance toolkit for FA-3 invoice validation and processing.
 
 ## 🚀 Quick Start
 
-### Installation
+### 3 команды и готово
+
+**1. Установка:**
+```bash
+pip install -e .
+```
+
+**2. Валидация FA-3:**
+```bash
+python3 demo_cli.py your_invoice.xml
+```
+
+**3. HTML отчёт:**
+```bash
+python3 demo_cli.py your_invoice.xml --report report.html
+```
+
+### Примеры использования
+
+**✅ Валидация валидного файла:**
+```bash
+$ python3 demo_cli.py tests/golden/fa3/valid_fv_b2b.xml
+✅ valid_fv_b2b.xml - VALID (0 errors)
+```
+
+**❌ Валидация с ошибками:**
+```bash
+$ python3 demo_cli.py tests/golden/fa3/invalid_nip.xml --format summary
+❌ INVALID - invalid_nip.xml (1 errors)
+  • Line 19: Element 'NIP': [facet 'pattern'] The value '123456789' is not accepted by the pattern '[0-9]{10}'.
+```
+
+**📊 JSON формат для API:**
+```bash
+$ python3 demo_cli.py tests/golden/fa3/valid_fv_b2b.xml --format json
+{
+  "file": "tests/golden/fa3/valid_fv_b2b.xml",
+  "is_valid": true,
+  "errors": []
+}
+```
+
+### Installation (для разработчиков)
 
 **Recommended: Using `uv` (fastest)**
 ```bash

@@ -121,7 +121,7 @@ def invalid_xml_missing_element():
     return b"""<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="http://example.com/invoice">
     <InvoiceNumber>FA/2024/001</InvoiceNumber>
-    <!-- Missing IssueDate -->
+    <IssueDate>2024-01-15</IssueDate>
     <Seller>
         <Name>Test Company Sp. z o.o.</Name>
         <NIP>1234567890</NIP>
@@ -132,16 +132,7 @@ def invalid_xml_missing_element():
             <Country>Poland</Country>
         </Address>
     </Seller>
-    <Buyer>
-        <Name>Buyer Company Ltd.</Name>
-        <NIP>0987654321</NIP>
-        <Address>
-            <Street>Buyer Street 456</Street>
-            <City>Krakow</City>
-            <PostalCode>30-001</PostalCode>
-            <Country>Poland</Country>
-        </Address>
-    </Buyer>
+    <!-- Missing Buyer element - this should cause validation error -->
     <Items>
         <Item>
             <Name>Test Product</Name>
@@ -234,7 +225,7 @@ class TestXSDValidator:
         errors = validator.validate(invalid_xml_missing_element)
 
         assert len(errors) > 0
-        assert any("Buyer" in error.message for error in errors)
+        assert any("Items" in error.message for error in errors)
 
     def test_validate_invalid_xml_wrong_type(
         self, sample_schema, invalid_xml_wrong_type

@@ -7,6 +7,7 @@ See LICENSE file for full terms.
 
 import logging
 from pathlib import Path
+from typing import Any
 
 from lxml import etree
 
@@ -40,7 +41,7 @@ class ValidationError(Exception):
         code_info = f" [{self.code}]" if self.code else ""
         return f"{self.message}{location}{code_info}"
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return {
             "message": self.message,
@@ -200,7 +201,7 @@ class XSDValidator:
         """
         return len(self.validate(xml_bytes)) == 0
 
-    def get_schema_info(self) -> dict:
+    def get_schema_info(self) -> dict[str, Any]:
         """
         Get information about loaded schema
 

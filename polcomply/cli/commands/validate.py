@@ -12,9 +12,9 @@ from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table
 
-from polcomply.reporting.html_report import generate_html_report
-from polcomply.validators.paths import resolve_fa3_schema
-from polcomply.validators.xsd import ValidationError, XSDValidator
+from ...reporting.html_report import generate_html_report
+from ...validators.paths import resolve_fa3_schema
+from ...validators.xsd import ValidationError, XSDValidator
 
 console = Console()
 
@@ -46,7 +46,7 @@ def validate_invoice(
     show_xml: bool = typer.Option(
         False, "--show-xml", help="Show XML content with error highlighting"
     ),
-):
+) -> None:
     """
     Validate FA-3 invoice XML against XSD schema
 
@@ -98,7 +98,7 @@ def validate_xml(
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Show detailed error information"
     ),
-):
+) -> None:
     """
     Validate any XML file against XSD schema
 
@@ -127,7 +127,7 @@ def validate_xml(
 
 def _output_table(
     errors: list[ValidationError], xml_file: Path, verbose: bool, show_xml: bool
-):
+) -> None:
     """Output validation results as a table"""
 
     if not errors:
@@ -172,7 +172,7 @@ def _output_table(
             )
 
 
-def _output_json(errors: list[ValidationError], xml_file: Path):
+def _output_json(errors: list[ValidationError], xml_file: Path) -> None:
     """Output validation results as JSON"""
     import json
 
@@ -186,7 +186,7 @@ def _output_json(errors: list[ValidationError], xml_file: Path):
     console.print(json.dumps(result, indent=2))
 
 
-def _output_summary(errors: list[ValidationError], xml_file: Path):
+def _output_summary(errors: list[ValidationError], xml_file: Path) -> None:
     """Output validation results as summary"""
 
     if not errors:

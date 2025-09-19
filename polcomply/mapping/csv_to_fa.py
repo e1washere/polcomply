@@ -67,7 +67,7 @@ class CSVToFAMapper:
         except Exception as e:
             raise MappingError(f"Failed to load mapping config: {e}")
 
-    def read_csv(self, csv_path: Path, **kwargs) -> pd.DataFrame:
+    def read_csv(self, csv_path: Path, **kwargs: Any) -> pd.DataFrame:
         """
         Read CSV file with pandas
 

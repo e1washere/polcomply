@@ -9,6 +9,7 @@
             <Street>ul. Techniczna 15</Street>
             <City>Katowice</City>
             <PostalCode>40-001</PostalCode>
+                    <Country>PL</Country>
         </Address>
     </Seller>
     <Buyer>
@@ -18,6 +19,7 @@
             <Street>ul. Korporacyjna 20</Street>
             <City>Szczecin</City>
             <PostalCode>70-001</PostalCode>
+                    <Country>PL</Country>
         </Address>
     </Buyer>
     <Items>
