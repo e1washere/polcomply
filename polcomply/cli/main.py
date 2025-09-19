@@ -30,7 +30,7 @@ app.add_typer(map_command, name="map", help="Map invoice data between formats")
 
 
 @app.command()
-def version():
+def version() -> None:
     """Show version information"""
     try:
         from polcomply import __version__
@@ -41,7 +41,7 @@ def version():
 
 
 @app.command()
-def info():
+def info() -> None:
     """Show SDK information"""
     info_text = Text()
     info_text.append("PolComply SDK\n", style="bold blue")

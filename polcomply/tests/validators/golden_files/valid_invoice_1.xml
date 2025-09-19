@@ -9,6 +9,7 @@
             <Street>ul. Testowa 1</Street>
             <City>Warszawa</City>
             <PostalCode>00-001</PostalCode>
+                    <Country>PL</Country>
         </Address>
     </Seller>
     <Buyer>
@@ -18,6 +19,7 @@
             <Street>ul. Klienta 2</Street>
             <City>Kraków</City>
             <PostalCode>30-001</PostalCode>
+                    <Country>PL</Country>
         </Address>
     </Buyer>
     <Items>

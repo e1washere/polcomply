@@ -3,7 +3,13 @@
 from datetime import datetime
 from pathlib import Path
 
-from polcomply.validators.xsd import ValidationError
+# Temporary ValidationError class for demo
+class ValidationError:
+    def __init__(self, message: str, line: int = None, column: int = None, code: str = None):
+        self.message = message
+        self.line = line
+        self.column = column
+        self.code = code
 
 
 def generate_html_report(

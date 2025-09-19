@@ -6,6 +6,7 @@ See LICENSE file for full terms.
 """
 
 from pathlib import Path
+from typing import Any
 
 import typer
 from rich.console import Console
@@ -13,7 +14,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from polcomply.mapping.csv_to_fa import CSVToFAMapper, MappingError
+from ...mapping.csv_to_fa import CSVToFAMapper, MappingError
 
 console = Console()
 
@@ -45,7 +46,7 @@ def map_csv_to_fa(
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Show detailed mapping information"
     ),
-):
+) -> None:
     """
     Map CSV/Excel data to FA-3 XML format
 
@@ -122,7 +123,7 @@ def map_invoice(
     config_file: Path = typer.Option(
         Path("mapping/fa3.yaml"), "--config", "-c", help="Path to mapping configuration"
     ),
-):
+) -> None:
     """
     Map invoice data between different formats
 
@@ -149,7 +150,7 @@ def map_invoice(
         console.print("[green]✓[/green] [bold green]Mapping completed![/bold green]")
 
 
-def _show_mapping_report(report: dict):
+def _show_mapping_report(report: dict[str, Any]) -> None:
     """Show detailed mapping report"""
     console.print("\n[bold]Mapping Report:[/bold]")
 
@@ -188,7 +189,7 @@ def _show_mapping_report(report: dict):
 
 
 @map_command.command("list")
-def list_formats():
+def list_formats() -> None:
     """List supported input/output formats"""
 
     formats_text = Text()
