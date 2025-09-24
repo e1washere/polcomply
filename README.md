@@ -15,22 +15,27 @@
 
 ## 🎯 What is PolComply?
 
-PolComply is a comprehensive platform for FA-3 XML validation, helping Polish businesses ensure their electronic invoices meet government compliance requirements. Our solution provides:
+**KSeF w 14 dni: od PDF do UPO** - Professional FA-3 XML validation platform for Polish e-invoicing compliance.
 
+Our solution provides:
 - ✅ **Instant XML validation** against official FA-3 schemas
-- 📊 **Detailed error reports** with line-by-line analysis
+- 📊 **Detailed error reports** with line-by-line analysis  
 - 🔧 **CLI tools** for developers and automation
 - 🌐 **REST API** for system integration
 - 📈 **Professional reporting** with downloadable HTML reports
+- 🚀 **KSeF sandbox integration** for UPO generation
+- 📤 **CSV export** to Fakturownia/wFirma
 
 ## 🛠️ Quick Start
 
-### Free Online Validation
+### Free Online Validation (5 weryfikacji/dzień)
 
 1. Visit our [demo site](https://polcomply-demo.herokuapp.com)
 2. Upload your XML invoice file
 3. Get instant validation results
 4. Download detailed compliance report
+
+**Free limitations**: No UPO generation, no CSV export
 
 ### CLI Installation
 
@@ -47,8 +52,8 @@ pip install -e ".[dev]"
 ### Basic Usage
 
 ```bash
-# Validate XML file
-polcomply validate invoice.xml --report report.html
+# Validate XML file with HTML report
+polcomply validate tests/golden/fa3/valid_fv_b2b.xml --schema schemas/FA-3.xsd --report out/report.html --format table
 
 # Map CSV to FA-3 XML
 polcomply map data.csv --output invoice.xml
@@ -61,9 +66,12 @@ polcomply --help
 
 ```bash
 # Validate XML via API
-curl -X POST "https://polcomply-demo.herokuapp.com/api/validate/xml" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@invoice.xml"
+curl -F "file=@tests/golden/fa3/invalid_nip.xml" http://localhost:8000/api/validate/xml
+
+# Send to KSeF sandbox (UPO demo)
+curl -X POST "http://localhost:8000/ksef/send" \
+  -H "Content-Type: application/json" \
+  -d '{"xml_content": "...", "nip": "1234567890"}'
 ```
 
 ## 📋 Features
@@ -145,17 +153,31 @@ git push heroku main
 
 ## 📈 Commercial Plans
 
-### 🆓 Free Tier
-- **Online validation**: Unlimited XML file validation
+### 🆓 Free Tier (5 weryfikacji/dzień)
+- **Online validation**: Limited XML file validation
 - **Basic reports**: HTML download reports
-- **Community support**: GitHub issues and documentation
+- **No UPO**: No KSeF sandbox integration
+- **No export**: No CSV export to Fakturownia/wFirma
 
 ### 💼 Professional Plans
-- **Validator Pro**: Advanced validation features, API access
-- **Integrator**: Full API integration, custom schemas
-- **Pilot pod klucz**: Custom implementation, dedicated support
 
-[Contact us](mailto:contact@polcomply.pl) for enterprise pricing and custom solutions.
+**Starter 1299 PLN/mies**
+- Do 1000 dok./mies
+- UPO (sandbox/produkcyjne)
+- 1 integracja (CSV Fakturownia/wFirma)
+- SLA 24h
+
+**Growth 1699 PLN/mies**
+- Do 5000 dok./mies
+- 3 integracje
+- On-prem connector
+- SLA 8h
+
+**Onboarding 1500-2500 PLN**
+- "KSeF w 14 dni" - custom implementation
+- Dedicated support
+
+[Umów demo](mailto:contact@polcomply.pl) - pokażę UPO na żywo w 60 sekund
 
 ## 🤝 Contributing
 
@@ -180,10 +202,10 @@ This project is licensed under the Business Source License 1.1. See [LICENSE](LI
 
 ## 🎯 Roadmap
 
-- [ ] **Q4 2024**: Public API launch
-- [ ] **Q1 2025**: Advanced reporting features
-- [ ] **Q2 2025**: Multi-language support
-- [ ] **Q3 2025**: Enterprise dashboard
+- [x] **v0.1.0 (24.09.2025)**: FA-3 validator stable, CLI/API, landing
+- [ ] **v0.2.0 (30.09.2025)**: KSeF sandbox UPO + CSV export + demo video
+- [ ] **v0.3.0 (31.10.2025)**: 2 платящих пилота + on-prem connector
+- [ ] **v0.4.0 (31.12.2025)**: 12-20 клиентов (3-8k MRR)
 
 ---
 

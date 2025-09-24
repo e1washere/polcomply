@@ -17,7 +17,7 @@ from pathlib import Path
 
 from app.config import settings
 from app.database import engine, Base
-from app.routers import auth, invoices, vat, ai, companies, validate, lead
+from app.routers import auth, invoices, vat, ai, companies, validate, lead, ksef
 from app.utils.logging import setup_logging
 
 # Setup logging
@@ -68,6 +68,7 @@ if settings.ENVIRONMENT == "production":
 
 # Include routers
 app.include_router(validate.router)  # Free FA-3 validation (no prefix for easy access)
+app.include_router(ksef.router)  # KSeF sandbox integration
 app.include_router(auth.router, prefix="/v1/auth", tags=["Authentication"])
 app.include_router(companies.router, prefix="/v1/companies", tags=["Companies"])
 app.include_router(invoices.router, prefix="/v1/invoices", tags=["Invoices"])

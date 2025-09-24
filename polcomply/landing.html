@@ -259,6 +259,142 @@
             line-height: 1.6;
         }
         
+        /* Pricing Section */
+        .pricing {
+            padding: 4rem 0;
+            background: #f8f9fa;
+        }
+        
+        .pricing-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+        
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .pricing-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .pricing-header {
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+        
+        .pricing-period {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .pricing-button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+        
+        .pricing-button:hover {
+            background: #5a6fd8;
+        }
+        
+        .pricing-card.starter .pricing-button {
+            background: #28a745;
+        }
+        
+        .pricing-card.starter .pricing-button:hover {
+            background: #218838;
+        }
+        
+        .pricing-cta {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .pricing-cta h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .pricing-cta p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pricing-button.onboarding {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .pricing-button.onboarding:hover {
+            background: #e0a800;
+        }
+        
         /* Timeline Section */
         .timeline {
             padding: 4rem 0;
@@ -469,6 +605,69 @@
                     <h3 class="feature-title">Wsparcie eksperckie</h3>
                     <p class="feature-desc">Pomoc w przygotowaniu do KSeF 2.0 od ekspertów ds. e-fakturowania.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="pricing-title">Wybierz plan dla swojej firmy</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card free">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Free</h3>
+                        <div class="pricing-price">0 PLN</div>
+                        <div class="pricing-period">/miesiąc</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>5 weryfikacji/dzień</li>
+                        <li>Raporty HTML</li>
+                        <li>Bez UPO</li>
+                        <li>Bez eksportu CSV</li>
+                        <li>Wsparcie społeczności</li>
+                    </ul>
+                    <a href="#validator" class="pricing-button">Rozpocznij za darmo</a>
+                </div>
+                
+                <div class="pricing-card starter">
+                    <div class="pricing-badge">Popularny</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Starter</h3>
+                        <div class="pricing-price">1299 PLN</div>
+                        <div class="pricing-period">/miesiąc</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Do 1000 dokumentów/mies</li>
+                        <li>UPO (sandbox/produkcyjne)</li>
+                        <li>1 integracja (CSV Fakturownia/wFirma)</li>
+                        <li>SLA 24h</li>
+                        <li>Wsparcie email</li>
+                    </ul>
+                    <a href="https://buy.stripe.com/test_starter" class="pricing-button">Kup Starter</a>
+                </div>
+                
+                <div class="pricing-card growth">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">Growth</h3>
+                        <div class="pricing-price">1699 PLN</div>
+                        <div class="pricing-period">/miesiąc</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Do 5000 dokumentów/mies</li>
+                        <li>3 integracje</li>
+                        <li>On-prem connector</li>
+                        <li>SLA 8h</li>
+                        <li>Dedykowane wsparcie</li>
+                    </ul>
+                    <a href="https://buy.stripe.com/test_growth" class="pricing-button">Kup Growth</a>
+                </div>
+            </div>
+            
+            <div class="pricing-cta">
+                <h3>Potrzebujesz pomocy w wdrożeniu?</h3>
+                <p>Oferujemy "KSeF w 14 dni" - kompleksowe wdrożenie z dedykowanym wsparciem</p>
+                <a href="https://buy.stripe.com/test_onboarding" class="pricing-button onboarding">Onboarding 1500-2500 PLN</a>
             </div>
         </div>
     </section>
