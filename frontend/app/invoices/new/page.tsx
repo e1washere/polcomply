@@ -1,3 +1,8 @@
+/**
+ * Licensed under the Business Source License 1.1 (BSL).
+ * See LICENSE file for full terms.
+ */
+
 "use client";
 
 import { useState } from "react";

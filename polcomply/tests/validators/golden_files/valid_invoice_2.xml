@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="http://example.com/invoice">
+    <InvoiceNumber>FA/2024/002</InvoiceNumber>
+    <IssueDate>2024-01-16</IssueDate>
+    <Seller>
+        <Name>Another Company Ltd.</Name>
+        <NIP>1111111111</NIP>
+        <Address>
+            <Street>ul. Biznesowa 10</Street>
+            <City>Gdańsk</City>
+            <PostalCode>80-001</PostalCode>
+                    <Country>PL</Country>
+        </Address>
+    </Seller>
+    <Buyer>
+        <Name>Customer Corp.</Name>
+        <NIP>2222222222</NIP>
+        <Address>
+            <Street>ul. Kupiecka 5</Street>
+            <City>Wrocław</City>
+            <PostalCode>50-001</PostalCode>
+                    <Country>PL</Country>
+        </Address>
+    </Buyer>
+    <Items>
+        <Item>
+            <Name>Premium Service</Name>
+            <Quantity>1</Quantity>
+            <UnitPrice>500.00</UnitPrice>
+            <TotalPrice>500.00</TotalPrice>
+        </Item>
+        <Item>
+            <Name>Additional Support</Name>
+            <Quantity>3</Quantity>
+            <UnitPrice>50.00</UnitPrice>
+            <TotalPrice>150.00</TotalPrice>
+        </Item>
+    </Items>
+    <TotalAmount>650.00</TotalAmount>
+</Invoice>

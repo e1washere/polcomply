@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bezpłatna walidacja FA-3 | PolComply - Sprawdź zgodność z KSeF 2.0</title>
+    <meta name="description" content="Bezpłatnie sprawdź zgodność Twoich faktur XML z formatem FA-3. Przygotuj się na KSeF 2.0 już dziś. Walidacja w czasie rzeczywistym.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .cta-button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Validator Section */
+        .validator-section {
+            background: white;
+            padding: 4rem 0;
+            margin: -2rem 0 0 0;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .validator-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .validator-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .validator-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #5a67d8;
+            background: #f0f2ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #5a67d8;
+            background: #e6f3ff;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-subtext {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .form-group {
+            margin: 2rem 0;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .results {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .results.success {
+            background: #f0f9f0;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+        
+        .results.error {
+            background: #fff3f3;
+            border: 1px solid #f44336;
+            color: #c62828;
+        }
+        
+        /* Features Section */
+        .features {
+            background: #f8f9fa;
+            padding: 4rem 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Timeline Section */
+        .timeline {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .timeline-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+        
+        .timeline-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .timeline-item {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .timeline-date {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-event {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .timeline-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+        
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #555;
+            padding-top: 1rem;
+            color: #999;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-stats { flex-direction: column; gap: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .upload-area { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">PolComply</div>
+                <a href="#validator" class="cta-button">Sprawdź FA-3 za darmo</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Bezpłatna walidacja FA-3</h1>
+            <p>Sprawdź zgodność Twoich faktur XML z formatem FA-3 przed wdrożeniem KSeF 2.0. Walidacja w czasie rzeczywistym z szczegółowym raportem błędów.</p>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">30.09.2025</span>
+                    <span class="stat-label">Start testów KSeF 2.0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">01.04.2026</span>
+                    <span class="stat-label">Obowiązek dla wszystkich</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Zgodność z FA-3</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Validator Section -->
+    <section class="validator-section" id="validator">
+        <div class="validator-container">
+            <h2 class="validator-title">Sprawdź swoją fakturę FA-3</h2>
+            <p class="validator-subtitle">Przeciągnij plik XML lub kliknij, aby wybrać</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Przeciągnij tutaj plik XML lub kliknij, aby wybrać</div>
+                <div class="upload-subtext">Obsługiwane formaty: .xml (maks. 10MB)</div>
+                <input type="file" id="fileInput" accept=".xml" />
+            </div>
+            
+            <form id="leadForm" style="display: none;">
+                <div class="form-group">
+                    <div class="form-row">
+                        <input type="text" name="firstName" placeholder="Imię *" required>
+                        <input type="text" name="lastName" placeholder="Nazwisko *" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="email" name="email" placeholder="Email *" required>
+                        <input type="tel" name="phone" placeholder="Telefon">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" name="company" placeholder="Nazwa firmy *" required>
+                        <select name="companySize">
+                            <option value="">Wielkość firmy</option>
+                            <option value="1-10">1-10 pracowników</option>
+                            <option value="11-50">11-50 pracowników</option>
+                            <option value="51-250">51-250 pracowników</option>
+                            <option value="250+">250+ pracowników</option>
+                        </select>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="rodo" name="rodo" required>
+                        <label for="rodo">Zgadzam się na przetwarzanie danych osobowych zgodnie z <a href="#rodo">RODO</a> *</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="marketing" name="marketing">
+                        <label for="marketing">Chcę otrzymywać informacje o nowych funkcjach i usługach</label>
+                    </div>
+                </div>
+                <button type="submit" class="cta-button" style="width: 100%; margin-top: 1rem;">
+                    Sprawdź plik i otrzymaj raport
+                </button>
+            </form>
+            
+            <div class="results" id="results"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Błyskawiczna walidacja</h3>
+                    <p class="feature-desc">Sprawdź zgodność z FA-3 w kilka sekund. Natychmiastowe wyniki bez oczekiwania.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Szczegółowe błędy</h3>
+                    <p class="feature-desc">Dokładne wskazanie linii, kolumn i opisów błędów. Łatwe naprawianie problemów.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">100% bezpieczeństwo</h3>
+                    <p class="feature-desc">Twoje dane są bezpieczne. Pliki nie są przechowywane na naszych serwerach.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Raporty HTML</h3>
+                    <p class="feature-desc">Profesjonalne raporty do udostępnienia zespołowi i archiwizacji.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">API dla integracji</h3>
+                    <p class="feature-desc">Zintegruj walidację z własnymi systemami przez nasze REST API.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3 class="feature-title">Wsparcie eksperckie</h3>
+                    <p class="feature-desc">Pomoc w przygotowaniu do KSeF 2.0 od ekspertów ds. e-fakturowania.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="timeline">
+        <div class="container">
+            <h2 class="timeline-title">Harmonogram wdrożenia KSeF 2.0</h2>
+            <div class="timeline-items">
+                <div class="timeline-item">
+                    <div class="timeline-date">30.06.2025</div>
+                    <div class="timeline-event">Publikacja schematów</div>
+                    <div class="timeline-desc">Oficjalne schematy FA-3 i API KSeF 2.0</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">30.09.2025</div>
+                    <div class="timeline-event">Start testów</div>
+                    <div class="timeline-desc">Środowisko testowe dostępne dla firm</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">01.02.2026</div>
+                    <div class="timeline-event">Duże przedsiębiorstwa</div>
+                    <div class="timeline-desc">Obowiązek dla firm powyżej 250 pracowników</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">01.04.2026</div>
+                    <div class="timeline-event">Wszystkie firmy</div>
+                    <div class="timeline-desc">Pełne wdrożenie KSeF 2.0 dla wszystkich</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>PolComply</h3>
+                    <p>Narzędzia zgodności z polskimi przepisami e-fakturowania. Przygotuj się na KSeF 2.0 już dziś.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Usługi</h3>
+                    <a href="#validator">Bezpłatna walidacja</a>
+                    <a href="#api">API dla integratorów</a>
+                    <a href="#consulting">Konsultacje</a>
+                    <a href="#training">Szkolenia</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Wsparcie</h3>
+                    <a href="#docs">Dokumentacja</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#contact">Kontakt</a>
+                    <a href="#rodo">Polityka prywatności</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PolComply. Wszystkie prawa zastrzeżone.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const leadForm = document.getElementById('leadForm');
+        const results = document.getElementById('results');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.xml')) {
+                showResults('error', 'Proszę wybrać plik XML.');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showResults('error', 'Plik jest za duży. Maksymalny rozmiar: 10MB.');
+                return;
+            }
+
+            // Show lead form
+            leadForm.style.display = 'block';
+            uploadArea.style.display = 'none';
+            
+            // Store file for later processing
+            window.selectedFile = file;
+        }
+
+        // Form submission
+        leadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!window.selectedFile) {
+                showResults('error', 'Nie wybrano pliku.');
+                return;
+            }
+
+            const formData = new FormData(leadForm);
+            formData.append('file', window.selectedFile);
+
+            try {
+                // Show loading
+                showResults('info', 'Sprawdzanie pliku...');
+
+                // Simulate API call (replace with actual endpoint)
+                const response = await fetch('/api/validate/xml', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    if (result.ok) {
+                        showResults('success', `✅ Plik jest zgodny z FA-3! Brak błędów walidacji.`);
+                    } else {
+                        const errorList = result.errors.map(e => 
+                            `• Linia ${e.line}: ${e.message}`
+                        ).join('\\n');
+                        
+                        showResults('error', 
+                            `❌ Znaleziono ${result.errors.length} błędów:\\n\\n${errorList}\\n\\nSzczegółowy raport został wysłany na Twój email.`
+                        );
+                    }
+                } else {
+                    showResults('error', 'Wystąpił błąd podczas walidacji. Spróbuj ponownie.');
+                }
+            } catch (error) {
+                console.error('Validation error:', error);
+                showResults('error', 'Wystąpił błąd podczas walidacji. Spróbuj ponownie.');
+            }
+        });
+
+        function showResults(type, message) {
+            results.className = `results ${type}`;
+            results.innerHTML = message.replace(/\\n/g, '<br>');
+            results.style.display = 'block';
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

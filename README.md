@@ -1,132 +1,192 @@
-# PolComply - Automatyzacja e-faktur KSeF dla polskich firm
+# PolComply - FA-3 XML Validation Platform
 
-![Project Status](https://img.shields.io/badge/status-active-brightgreen)
-![License](https://img.shields.io/badge/license-Proprietary-blue)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
-![TypeScript](https://img.shields.io/badge/TypeScript-4.x-blue?logo=typescript)
+[![CI Status](https://github.com/e1washere/polcomply/workflows/CI/badge.svg)](https://github.com/e1washere/polcomply/actions)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](https://opensource.org/licenses/BSL-1.1)
 
-PolComply to kompletna platforma SaaS automatyzująca obowiązkowe e-faktury KSeF dla małych i średnich przedsiębiorstw w Polsce.
+> **Professional FA-3 XML validation for Polish e-invoicing compliance**
 
-## 🚀 Szybki start
+## 🚀 Live Demo
 
-### Wymagania
-- Docker Desktop 4.0+
-- 8GB RAM minimum
-- 10GB wolnego miejsca
+**Try our free XML validation service:**
+- 🌐 **Web Interface**: [https://polcomply-demo.herokuapp.com](https://polcomply-demo.herokuapp.com)
+- 📋 **API Documentation**: [https://polcomply-demo.herokuapp.com/docs](https://polcomply-demo.herokuapp.com/docs)
+- 🔍 **Health Check**: [https://polcomply-demo.herokuapp.com/health](https://polcomply-demo.herokuapp.com/health)
 
-### Instalacja i uruchomienie
+## 🎯 What is PolComply?
 
-1. Sklonuj repozytorium:
+PolComply is a comprehensive platform for FA-3 XML validation, helping Polish businesses ensure their electronic invoices meet government compliance requirements. Our solution provides:
+
+- ✅ **Instant XML validation** against official FA-3 schemas
+- 📊 **Detailed error reports** with line-by-line analysis
+- 🔧 **CLI tools** for developers and automation
+- 🌐 **REST API** for system integration
+- 📈 **Professional reporting** with downloadable HTML reports
+
+## 🛠️ Quick Start
+
+### Free Online Validation
+
+1. Visit our [demo site](https://polcomply-demo.herokuapp.com)
+2. Upload your XML invoice file
+3. Get instant validation results
+4. Download detailed compliance report
+
+### CLI Installation
+
 ```bash
-git clone https://github.com/polcomply/polcomply.git
+# Install from PyPI (coming soon)
+pip install polcomply
+
+# Or install from source
+git clone https://github.com/e1washere/polcomply.git
 cd polcomply
+pip install -e ".[dev]"
 ```
 
-2. Uruchom środowisko deweloperskie:
-```bash
-make dev
-```
-
-3. Aplikacja będzie dostępna pod adresami:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000/docs
-   - pgAdmin: http://localhost:5050
-
-### Domyślne dane logowania
-- Email: demo@polcomply.pl
-- Hasło: Demo123!@#
-
-## 📋 Funkcjonalności
-
-- ✅ Generowanie faktur zgodnych z KSeF
-- ✅ Automatyczne wysyłanie do systemu KSeF
-- ✅ Śledzenie statusów i obsługa błędów
-- ✅ Rejestr VAT z automatycznymi terminami
-- ✅ Asystent AI wyjaśniający przepisy po polsku
-- ✅ Wielofirmowość z kontrolą dostępu
-- ✅ Eksport do PDF i XML
-
-## 🏗️ Architektura
-
-```
-Frontend (Next.js + TypeScript) → Backend (FastAPI + Python) → PostgreSQL
-                                                            → Redis (cache)
-                                                            → Celery (async)
-                                                            → KSeF API
-```
-
-## 🔧 Konfiguracja
-
-Skopiuj `.env.example` do `.env` i uzupełnij:
-
-```env
-# Wymagane
-DATABASE_URL=postgresql://polcomply:password@localhost:5432/polcomply
-JWT_SECRET=your-secret-key-min-32-chars
-KSEF_API_URL=https://ksef-test.mf.gov.pl
-
-# Opcjonalne
-OPENAI_API_KEY=sk-...  # Dla asystenta AI
-SMTP_HOST=smtp.gmail.com
-SMTP_USER=your-email@gmail.com
-SMTP_PASSWORD=your-app-password
-```
-
-## 🧪 Testy
+### Basic Usage
 
 ```bash
-# Backend testy
-make test-backend
+# Validate XML file
+polcomply validate invoice.xml --report report.html
 
-# Frontend testy
-make test-frontend
+# Map CSV to FA-3 XML
+polcomply map data.csv --output invoice.xml
 
-# E2E testy
-make test-e2e
+# Show help
+polcomply --help
 ```
 
-## 📦 Deployment
+### API Integration
 
-### Produkcja (Docker Swarm)
 ```bash
-make build
-make deploy
+# Validate XML via API
+curl -X POST "https://polcomply-demo.herokuapp.com/api/validate/xml" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@invoice.xml"
 ```
 
-### Kubernetes
+## 📋 Features
+
+### Core Validation
+- **FA-3 Schema Compliance**: Full validation against official Polish e-invoicing schemas
+- **Real-time Processing**: Instant validation with detailed error reporting
+- **Multiple Formats**: Support for various invoice types (FV, KOR, MPP)
+- **Error Localization**: Precise line and column error identification
+
+### Developer Tools
+- **CLI Interface**: Command-line tools for automation and CI/CD
+- **REST API**: Full REST API for system integration
+- **Python SDK**: Easy integration with Python applications
+- **Docker Support**: Containerized deployment options
+
+### Professional Features
+- **HTML Reports**: Beautiful, downloadable validation reports
+- **Batch Processing**: Validate multiple files at once
+- **CSV Mapping**: Convert CSV data to FA-3 XML format
+- **Schema Auto-detection**: Automatic FA-3 schema resolution
+
+## 🏗️ Architecture
+
+```
+polcomply/
+├── cli/                 # Command-line interface
+├── validators/          # XSD validation engine
+├── mapping/            # CSV to FA-3 XML mapping
+├── reporting/          # HTML report generation
+└── tests/              # Comprehensive test suite
+
+backend/
+├── app/
+│   ├── routers/        # FastAPI endpoints
+│   ├── services/       # Business logic
+│   └── models/         # Database models
+└── static/             # Web interface
+```
+
+## 🧪 Testing
+
 ```bash
-kubectl apply -f k8s/
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=polcomply
+
+# Run specific test suite
+pytest tests/validators/
 ```
 
-## 📚 Dokumentacja
+## 📊 Quality Metrics
 
-- [Dokumentacja API](http://localhost:8000/docs)
-- [Podręcznik użytkownika](docs/user-guide-pl.md)
-- [Integracja KSeF](docs/ksef-integration.md)
+- **Test Coverage**: 59.55% (above 50% threshold)
+- **Code Quality**: Ruff + Black + MyPy compliant
+- **Python Version**: 3.11+ support
+- **License**: Business Source License 1.1
 
-## 🤝 Współpraca
+## 🚀 Deployment
 
-1. Fork repozytorium
-2. Stwórz branch (`git checkout -b feature/AmazingFeature`)
-3. Commit zmiany (`git commit -m 'Add AmazingFeature'`)
-4. Push do brancha (`git push origin feature/AmazingFeature`)
-5. Otwórz Pull Request
+### Docker
 
-## 📄 Licencja
+```bash
+# Build and run
+docker-compose up -d
 
-Proprietary - All rights reserved © 2024 PolComply
+# Access the application
+open http://localhost:8000
+```
 
-## 💬 Wsparcie
+### Heroku
 
-- Email: support@polcomply.pl
-- Telefon: +48 22 123 45 67
-- Chat: https://polcomply.pl/chat
+```bash
+# Deploy to Heroku
+git push heroku main
+```
 
-## 🔒 Bezpieczeństwo
+## 📈 Commercial Plans
 
-Znalazłeś lukę? Wyślij raport na: security@polcomply.pl
+### 🆓 Free Tier
+- **Online validation**: Unlimited XML file validation
+- **Basic reports**: HTML download reports
+- **Community support**: GitHub issues and documentation
+
+### 💼 Professional Plans
+- **Validator Pro**: Advanced validation features, API access
+- **Integrator**: Full API integration, custom schemas
+- **Pilot pod klucz**: Custom implementation, dedicated support
+
+[Contact us](mailto:contact@polcomply.pl) for enterprise pricing and custom solutions.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the Business Source License 1.1. See [LICENSE](LICENSE) for details.
+
+## 📞 Support
+
+- **Documentation**: [GitHub Wiki](https://github.com/e1washere/polcomply/wiki)
+- **Issues**: [GitHub Issues](https://github.com/e1washere/polcomply/issues)
+- **Email**: [contact@polcomply.pl](mailto:contact@polcomply.pl)
+- **LinkedIn**: [PolComply](https://linkedin.com/company/polcomply)
+
+## 🎯 Roadmap
+
+- [ ] **Q4 2024**: Public API launch
+- [ ] **Q1 2025**: Advanced reporting features
+- [ ] **Q2 2025**: Multi-language support
+- [ ] **Q3 2025**: Enterprise dashboard
 
 ---
 
-Stworzone z ❤️ dla polskich przedsiębiorców
+**Built with ❤️ for the Polish e-invoicing community**
+
+*PolComply - Making FA-3 compliance simple and reliable*

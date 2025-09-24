@@ -1,0 +1,202 @@
+# FA-3 Mapping Configuration
+# Polish e-invoicing standard mapping
+
+namespaces:
+  tns: "http://crd.gov.pl/wzor/2023/06/21/12348/"
+  xsi: "http://www.w3.org/2001/XMLSchema-instance"
+
+root:
+  element: "tns:Faktura"
+  attributes:
+    "xmlns:tns": "http://crd.gov.pl/wzor/2023/06/21/12348/"
+    "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+
+scenarios:
+  # Scenario 1: FV B2B (Standard B2B Invoice)
+  fv_b2b:
+    name: "Faktura B2B"
+    description: "Standard business-to-business invoice"
+    fields:
+      invoice_number:
+        xpath: "tns:Naglowek/tns:P_1"
+        type: "string"
+        required: true
+        max_length: 50
+        
+      issue_date:
+        xpath: "tns:Naglowek/tns:DataWystawienia"
+        type: "date"
+        required: true
+        format: "%Y-%m-%d"
+        
+      seller_nip:
+        xpath: "tns:Sprzedawca/tns:DaneIdentyfikacyjne/tns:NIP"
+        type: "string"
+        required: true
+        pattern: "^[0-9]{10}$"
+        
+      buyer_nip:
+        xpath: "tns:Nabywca/tns:DaneIdentyfikacyjne/tns:NIP"
+        type: "string"
+        required: true
+        pattern: "^[0-9]{10}$"
+        
+      net_amount:
+        xpath: "tns:Podsumowanie/tns:WartoscNetto"
+        type: "decimal"
+        required: true
+        
+      vat_amount:
+        xpath: "tns:Podsumowanie/tns:KwotaPodatku"
+        type: "decimal"
+        required: true
+        
+      gross_amount:
+        xpath: "tns:Podsumowanie/tns:WartoscBrutto"
+        type: "decimal"
+        required: true
+
+  # Scenario 2: Korekta (Correction Invoice)
+  korekta:
+    name: "Faktura korygująca"
+    description: "Correction invoice for value adjustment"
+    fields:
+      invoice_number:
+        xpath: "tns:Naglowek/tns:P_1"
+        type: "string"
+        required: true
+        max_length: 50
+        prefix: "FK/"
+        
+      original_invoice_number:
+        xpath: "tns:Naglowek/tns:P_2"
+        type: "string"
+        required: true
+        
+      correction_reason:
+        xpath: "tns:Naglowek/tns:P_19"
+        type: "string"
+        required: true
+        
+      issue_date:
+        xpath: "tns:Naglowek/tns:DataWystawienia"
+        type: "date"
+        required: true
+        format: "%Y-%m-%d"
+        
+      seller_nip:
+        xpath: "tns:Sprzedawca/tns:DaneIdentyfikacyjne/tns:NIP"
+        type: "string"
+        required: true
+        pattern: "^[0-9]{10}$"
+        
+      buyer_nip:
+        xpath: "tns:Nabywca/tns:DaneIdentyfikacyjne/tns:NIP"
+        type: "string"
+        required: true
+        pattern: "^[0-9]{10}$"
+        
+      correction_amount:
+        xpath: "tns:Podsumowanie/tns:WartoscKorekty"
+        type: "decimal"
+        required: true
+
+  # Scenario 3: MPP (Split Payment)
+  mpp:
+    name: "Mechanizm podzielonej płatności"
+    description: "Split payment mechanism invoice"
+    fields:
+      invoice_number:
+        xpath: "tns:Naglowek/tns:P_1"
+        type: "string"
+        required: true
+        max_length: 50
+        
+      issue_date:
+        xpath: "tns:Naglowek/tns:DataWystawienia"
+        type: "date"
+        required: true
+        format: "%Y-%m-%d"
+        
+      mpp_flag:
+        xpath: "tns:Naglowek/tns:P_23"
+        type: "string"
+        required: true
+        value: "1"  # MPP flag
+        
+      seller_nip:
+        xpath: "tns:Sprzedawca/tns:DaneIdentyfikacyjne/tns:NIP"
+        type: "string"
+        required: true
+        pattern: "^[0-9]{10}$"
+        
+      buyer_nip:
+        xpath: "tns:Nabywca/tns:DaneIdentyfikacyjne/tns:NIP"
+        type: "string"
+        required: true
+        pattern: "^[0-9]{10}$"
+        
+      net_amount:
+        xpath: "tns:Podsumowanie/tns:WartoscNetto"
+        type: "decimal"
+        required: true
+        
+      vat_amount:
+        xpath: "tns:Podsumowanie/tns:KwotaPodatku"
+        type: "decimal"
+        required: true
+        
+      gross_amount:
+        xpath: "tns:Podsumowanie/tns:WartoscBrutto"
+        type: "decimal"
+        required: true
+        
+      mpp_amount:
+        xpath: "tns:Podsumowanie/tns:KwotaMPP"
+        type: "decimal"
+        required: true
+
+# Common validation rules
+validation:
+  nip:
+    type: "regex"
+    pattern: "^[0-9]{10}$"
+    checksum: true
+    
+  postal_code:
+    type: "regex"
+    pattern: "^[0-9]{2}-[0-9]{3}$"
+    
+  vat_rates:
+    type: "enum"
+    values: [0, 5, 8, 23]
+    
+  currency:
+    type: "enum"
+    values: ["PLN"]
+    
+  payment_methods:
+    type: "enum"
+    values: ["transfer", "cash", "card", "check"]
+
+# Error messages
+errors:
+  FA3_001:
+    message: "Numer faktury jest wymagany"
+    fix_hint: "Wprowadź unikalny numer faktury zgodny z systemem numeracji firmy"
+    
+  FA3_012:
+    message: "NIP kontrahenta jest wymagany"
+    fix_hint: "Wprowadź 10-cyfrowy NIP kontrahenta"
+    
+  FA3_014:
+    message: "Nieprawidłowy NIP - błąd w sumie kontrolnej"
+    fix_hint: "Sprawdź poprawność NIP - suma kontrolna nie zgadza się"
+    
+  FA3_022:
+    message: "Nieprawidłowa stawka VAT"
+    fix_hint: "Dozwolone stawki VAT: [0, 5, 8, 23]"
+    
+  FA3_030:
+    message: "FA(3) wymaga waluty PLN"
+    fix_hint: "Zmień walutę na PLN dla zgodności z FA(3)"

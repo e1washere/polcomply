@@ -1,8 +1,10 @@
-.PHONY: help dev stop clean test build deploy
+.PHONY: help dev stop clean test build deploy demo demo-cli
 
 help:
 	@echo "Available commands:"
 	@echo "  make dev    - Start development environment"
+	@echo "  make demo   - Run demo API server (no Docker)"
+	@echo "  make demo-cli - Demo CLI validation"
 	@echo "  make stop   - Stop all containers"
 	@echo "  make clean  - Clean up containers and volumes"
 	@echo "  make test   - Run tests"
@@ -42,3 +44,20 @@ build:
 deploy:
 	@echo "Deploying to production..."
 	./scripts/deploy.sh
+
+demo:
+	@echo "🚀 Starting PolComply Demo API..."
+	@echo "📝 API docs will be available at: http://localhost:8000/docs"
+	@echo "🔍 Validation endpoint: POST http://localhost:8000/api/validate/xml"
+	@echo "📊 Upload XML files to test FA-3 validation"
+	@echo ""
+	cd backend && python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+demo-cli:
+	@echo "🎯 PolComply CLI Demo"
+	@echo "Testing FA-3 validation with sample files..."
+	@echo ""
+	cd polcomply && polcomply validate invoice tests/golden/fa3/valid_fv_b2b.xml --schema schemas/FA-3.xsd --report /tmp/report.html
+	@echo ""
+	@echo "✅ Report saved to: /tmp/report.html"
+	@echo "Open in browser: open /tmp/report.html"

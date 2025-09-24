@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="http://example.com/invoice">
+    <InvoiceNumber>FA/2024/001</InvoiceNumber>
+    <IssueDate>2024-01-15</IssueDate>
+    <Seller>
+        <Name>Test Company Sp. z o.o.</Name>
+        <NIP>1234567890</NIP>
+        <Address>
+            <Street>ul. Testowa 1</Street>
+            <City>Warszawa</City>
+            <PostalCode>00-001</PostalCode>
+        </Address>
+    </Seller>
+    <Buyer>
+        <Name>Client Company</Name>
+        <NIP>0987654321</NIP>
+        <Address>
+            <Street>ul. Klienta 2</Street>
+            <City>Kraków</City>
+            <PostalCode>30-001</PostalCode>
+        </Address>
+    </Buyer>
+    <Items>
+        <!-- Missing Item element - this should cause validation error -->
+    </Items>
+    <TotalAmount>200.00</TotalAmount>
+</Invoice>

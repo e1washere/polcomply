@@ -1,0 +1,10 @@
+---
+description: Python code style and testing rules
+alwaysApply: false
+globs:
+  - "polcomply/**/*.py"
+---
+- Используй pydantic v2 для моделей конфигурации и DTO.
+- CLI только через `typer` или `click`; для вывода — `rich`.
+- Исключай сетевые вызовы из юнит‑тестов (моки, `respx`/`pytest-httpx`).
+- Докстроки: Google style. Типы обязательны в публичном API.

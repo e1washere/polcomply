@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://crd.gov.pl/wzor/2023/06/21/12348/"
+           targetNamespace="http://crd.gov.pl/wzor/2023/06/21/12348/"
+           elementFormDefault="qualified">
+
+    <!-- FA-3 Invoice Schema for Polish e-invoicing -->
+    
+    <xs:element name="Faktura" type="tns:TFaktura">
+        <xs:annotation>
+            <xs:documentation>Główny element faktury FA-3</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:complexType name="TFaktura">
+        <xs:sequence>
+            <!-- Nagłówek faktury -->
+            <xs:element name="Naglowek" type="tns:TNaglowek"/>
+            
+            <!-- Sprzedawca -->
+            <xs:element name="Sprzedawca" type="tns:TPodmiot"/>
+            
+            <!-- Nabywca -->
+            <xs:element name="Nabywca" type="tns:TPodmiot"/>
+            
+            <!-- Pozycje faktury -->
+            <xs:element name="Pozycje" type="tns:TPozycje"/>
+            
+            <!-- Podsumowanie -->
+            <xs:element name="Podsumowanie" type="tns:TPodsumowanie"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TNaglowek">
+        <xs:sequence>
+            <xs:element name="KodFormularza" type="tns:TKodFormularza"/>
+            <xs:element name="WariantFormularza" type="xs:string"/>
+            <xs:element name="DataWystawienia" type="xs:date"/>
+            <xs:element name="MiejsceWystawienia" type="xs:string"/>
+            <xs:element name="DataSprzedazy" type="xs:date"/>
+            <xs:element name="KodWaluty" type="tns:TKodWaluty"/>
+            <xs:element name="P_1" type="xs:string"/>
+            <xs:element name="P_2" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TKodFormularza">
+        <xs:sequence>
+            <xs:element name="Kod" type="xs:string"/>
+            <xs:element name="WersjaSchemy" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TPodmiot">
+        <xs:sequence>
+            <xs:element name="DaneIdentyfikacyjne" type="tns:TDaneIdentyfikacyjne"/>
+            <xs:element name="Adres" type="tns:TAdres"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TDaneIdentyfikacyjne">
+        <xs:sequence>
+            <xs:element name="NIP" type="tns:TNIP"/>
+            <xs:element name="Nazwa" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TAdres">
+        <xs:sequence>
+            <xs:element name="KodKraju" type="tns:TKodKraju"/>
+            <xs:element name="Wojewodztwo" type="xs:string" minOccurs="0"/>
+            <xs:element name="Powiat" type="xs:string" minOccurs="0"/>
+            <xs:element name="Gmina" type="xs:string" minOccurs="0"/>
+            <xs:element name="Ulica" type="xs:string" minOccurs="0"/>
+            <xs:element name="NrDomu" type="xs:string" minOccurs="0"/>
+            <xs:element name="NrLokalu" type="xs:string" minOccurs="0"/>
+            <xs:element name="Miejscowosc" type="xs:string"/>
+            <xs:element name="KodPocztowy" type="tns:TKodPocztowy"/>
+            <xs:element name="Poczta" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TPozycje">
+        <xs:sequence>
+            <xs:element name="Pozycja" type="tns:TPozycja" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TPozycja">
+        <xs:sequence>
+            <xs:element name="LpSprzedazy" type="xs:positiveInteger"/>
+            <xs:element name="Nazwa" type="xs:string"/>
+            <xs:element name="Miara" type="xs:string"/>
+            <xs:element name="Ilosc" type="xs:decimal"/>
+            <xs:element name="CenaJednostkowa" type="xs:decimal"/>
+            <xs:element name="WartoscNetto" type="xs:decimal"/>
+            <xs:element name="StawkaPodatku" type="tns:TStawkaPodatku"/>
+            <xs:element name="KwotaPodatku" type="xs:decimal"/>
+            <xs:element name="WartoscBrutto" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TPodsumowanie">
+        <xs:sequence>
+            <xs:element name="LiczbaPozycji" type="xs:positiveInteger"/>
+            <xs:element name="WartoscNetto" type="xs:decimal"/>
+            <xs:element name="KwotaPodatku" type="xs:decimal"/>
+            <xs:element name="WartoscBrutto" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Simple types -->
+    <xs:simpleType name="TNIP">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{10}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TKodKraju">
+        <xs:restriction base="xs:string">
+            <xs:length value="2"/>
+            <xs:pattern value="[A-Z]{2}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TKodPocztowy">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{2}-[0-9]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TKodWaluty">
+        <xs:restriction base="xs:string">
+            <xs:length value="3"/>
+            <xs:pattern value="[A-Z]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TStawkaPodatku">
+        <xs:restriction base="xs:decimal">
+            <xs:enumeration value="0"/>
+            <xs:enumeration value="5"/>
+            <xs:enumeration value="8"/>
+            <xs:enumeration value="23"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
