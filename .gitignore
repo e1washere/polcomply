@@ -38,3 +38,7 @@ out/
 *.exe
 *.pem
 *.pth
+
+# Local junk
+polcomply-clean/
+coverage.xml
