@@ -37,7 +37,8 @@ def map_csv_to_fa(
         "-c",
         help="Path to mapping configuration YAML",
     ),
-    schema_file: Path | None = typer.Option(
+    schema_file: Path
+    | None = typer.Option(
         None, "--schema", "-s", help="Path to FA-3 XSD schema for validation"
     ),
     validate: bool = typer.Option(

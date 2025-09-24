@@ -161,10 +161,11 @@ class TestFA3Validator:
 
     def test_invalid_nip_checksum(self):
         """Test validation fails with invalid NIP checksum"""
+        validator = FA3Validator(strict=True)
         invoice = self.valid_invoice.copy()
         invoice["contractor_data"]["nip"] = "1234567891"  # Invalid checksum
 
-        result = self.validator.validate_invoice(invoice)
+        result = validator.validate_invoice(invoice)
 
         assert result.is_valid is False
         assert len(result.errors) == 1

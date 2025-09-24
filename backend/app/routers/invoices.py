@@ -16,7 +16,6 @@ from app.schemas.invoice import (
     InvoiceList,
     ValidationResult,
 )
-from app.services.invoice_service import InvoiceService
 from app.services.fa3_validator import FA3Validator
 from app.utils.auth import get_current_user
 from app.models.user import User

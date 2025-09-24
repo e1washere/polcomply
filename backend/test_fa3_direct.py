@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 """Direct test for FA3Validator without database dependencies"""
+# ruff: noqa: E402
 
-import sys
-import os
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import only what we need
 from decimal import Decimal
@@ -118,7 +115,7 @@ class FA3Validator:
 
     def _validate_dates(self, data: Dict[str, Any]) -> None:
         """Validate invoice dates and their relationships"""
-        today = date.today()
+        _today = date.today()
 
         # Issue date validation
         issue_date = data.get("issue_date")

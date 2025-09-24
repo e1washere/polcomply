@@ -1,170 +1,120 @@
 """Tests for validation API endpoint"""
 
-import pytest
 from fastapi.testclient import TestClient
-from pathlib import Path
 
 from app.main import app
 
 client = TestClient(app)
 
 
-def test_validate_xml_valid():
-    """Test validation with valid XML"""
-    
+def test_validate_xml_valid() -> None:
     valid_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
 <Faktura xmlns="http://crd.gov.pl/wzor/2023/06/21/12348/">
-    <Naglowek>
-        <KodFormularza>
-            <Kod>FA</Kod>
-            <WersjaSchemy>1-0E</WersjaSchemy>
-        </KodFormularza>
-        <WariantFormularza>1</WariantFormularza>
-        <DataWystawienia>2024-01-15</DataWystawienia>
-        <MiejsceWystawienia>Warszawa</MiejsceWystawienia>
-        <DataSprzedazy>2024-01-15</DataSprzedazy>
-        <KodWaluty>PLN</KodWaluty>
-        <P_1>FV/2024/001</P_1>
-        <P_2>FV/2024/001</P_2>
-    </Naglowek>
-    <Sprzedawca>
-        <DaneIdentyfikacyjne>
-            <NIP>5262312345</NIP>
-            <Nazwa>Test Company</Nazwa>
-        </DaneIdentyfikacyjne>
-        <Adres>
-            <KodKraju>PL</KodKraju>
-            <Miejscowosc>Warszawa</Miejscowosc>
-            <KodPocztowy>00-001</KodPocztowy>
-            <Poczta>Warszawa</Poczta>
-        </Adres>
-    </Sprzedawca>
-    <Nabywca>
-        <DaneIdentyfikacyjne>
-            <NIP>7792439665</NIP>
-            <Nazwa>Client Company</Nazwa>
-        </DaneIdentyfikacyjne>
-        <Adres>
-            <KodKraju>PL</KodKraju>
-            <Miejscowosc>Krakow</Miejscowosc>
-            <KodPocztowy>30-001</KodPocztowy>
-            <Poczta>Krakow</Poczta>
-        </Adres>
-    </Nabywca>
-    <Pozycje>
-        <Pozycja>
-            <LpSprzedazy>1</LpSprzedazy>
-            <Nazwa>Test Product</Nazwa>
-            <Miara>szt.</Miara>
-            <Ilosc>2</Ilosc>
-            <CenaJednostkowa>100.00</CenaJednostkowa>
-            <WartoscNetto>200.00</WartoscNetto>
-            <StawkaPodatku>23</StawkaPodatku>
-            <KwotaPodatku>46.00</KwotaPodatku>
-            <WartoscBrutto>246.00</WartoscBrutto>
-        </Pozycja>
-    </Pozycje>
-    <Podsumowanie>
-        <LiczbaPozycji>1</LiczbaPozycji>
-        <WartoscNetto>200.00</WartoscNetto>
-        <KwotaPodatku>46.00</KwotaPodatku>
-        <WartoscBrutto>246.00</WartoscBrutto>
-    </Podsumowanie>
+  <Naglowek>
+    <KodFormularza><Kod>FA</Kod><WersjaSchemy>1-0E</WersjaSchemy></KodFormularza>
+    <WariantFormularza>1</WariantFormularza>
+    <DataWystawienia>2024-01-15</DataWystawienia>
+    <MiejsceWystawienia>Warszawa</MiejsceWystawienia>
+    <DataSprzedazy>2024-01-15</DataSprzedazy>
+    <KodWaluty>PLN</KodWaluty>
+    <P_1>FV/2024/001</P_1>
+    <P_2>FV/2024/001</P_2>
+  </Naglowek>
+  <Sprzedawca>
+    <DaneIdentyfikacyjne><NIP>5262312345</NIP><Nazwa>Test Company</Nazwa></DaneIdentyfikacyjne>
+    <Adres><KodKraju>PL</KodKraju><Miejscowosc>Warszawa</Miejscowosc><KodPocztowy>00-001</KodPocztowy><Poczta>Warszawa</Poczta></Adres>
+  </Sprzedawca>
+  <Nabywca>
+    <DaneIdentyfikacyjne><NIP>7792439665</NIP><Nazwa>Client Company</Nazwa></DaneIdentyfikacyjne>
+    <Adres><KodKraju>PL</KodKraju><Miejscowosc>Krakow</Miejscowosc><KodPocztowy>30-001</KodPocztowy><Poczta>Krakow</Poczta></Adres>
+  </Nabywca>
+  <Pozycje>
+    <Pozycja>
+      <LpSprzedazy>1</LpSprzedazy>
+      <Nazwa>Test Product</Nazwa>
+      <Miara>szt.</Miara>
+      <Ilosc>2</Ilosc>
+      <CenaJednostkowa>100.00</CenaJednostkowa>
+      <WartoscNetto>200.00</WartoscNetto>
+      <StawkaPodatku>23</StawkaPodatku>
+      <KwotaPodatku>46.00</KwotaPodatku>
+      <WartoscBrutto>246.00</WartoscBrutto>
+    </Pozycja>
+  </Pozycje>
+  <Podsumowanie>
+    <LiczbaPozycji>1</LiczbaPozycji>
+    <WartoscNetto>200.00</WartoscNetto>
+    <KwotaPodatku>46.00</KwotaPodatku>
+    <WartoscBrutto>246.00</WartoscBrutto>
+  </Podsumowanie>
 </Faktura>"""
-    
+
     response = client.post(
         "/api/validate/xml",
-        files={"file": ("test.xml", valid_xml, "text/xml")}
+        files={"file": ("test.xml", valid_xml, "text/xml")},
     )
-    
     assert response.status_code == 200
     data = response.json()
-    assert data["ok"] == True
+    assert data["ok"] is True
     assert data["filename"] == "test.xml"
     assert len(data["errors"]) == 0
-    assert data["summary"]["is_compliant"] == True
+    assert data["summary"]["is_compliant"] is True
 
 
-def test_validate_xml_invalid_nip():
-    """Test validation with invalid NIP"""
-    
+def test_validate_xml_invalid_nip() -> None:
     invalid_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
 <Faktura xmlns="http://crd.gov.pl/wzor/2023/06/21/12348/">
-    <Naglowek>
-        <KodFormularza>
-            <Kod>FA</Kod>
-            <WersjaSchemy>1-0E</WersjaSchemy>
-        </KodFormularza>
-        <WariantFormularza>1</WariantFormularza>
-        <DataWystawienia>2024-01-15</DataWystawienia>
-        <MiejsceWystawienia>Warszawa</MiejsceWystawienia>
-        <DataSprzedazy>2024-01-15</DataSprzedazy>
-        <KodWaluty>PLN</KodWaluty>
-        <P_1>FV/2024/001</P_1>
-        <P_2>FV/2024/001</P_2>
-    </Naglowek>
-    <Sprzedawca>
-        <DaneIdentyfikacyjne>
-            <NIP>123456789</NIP>
-            <Nazwa>Test Company</Nazwa>
-        </DaneIdentyfikacyjne>
-        <Adres>
-            <KodKraju>PL</KodKraju>
-            <Miejscowosc>Warszawa</Miejscowosc>
-            <KodPocztowy>00-001</KodPocztowy>
-            <Poczta>Warszawa</Poczta>
-        </Adres>
-    </Sprzedawca>
-    <Nabywca>
-        <DaneIdentyfikacyjne>
-            <NIP>7792439665</NIP>
-            <Nazwa>Client Company</Nazwa>
-        </DaneIdentyfikacyjne>
-        <Adres>
-            <KodKraju>PL</KodKraju>
-            <Miejscowosc>Krakow</Miejscowosc>
-            <KodPocztowy>30-001</KodPocztowy>
-            <Poczta>Krakow</Poczta>
-        </Adres>
-    </Nabywca>
-    <Pozycje>
-        <Pozycja>
-            <LpSprzedazy>1</LpSprzedazy>
-            <Nazwa>Test Product</Nazwa>
-            <Miara>szt.</Miara>
-            <Ilosc>2</Ilosc>
-            <CenaJednostkowa>100.00</CenaJednostkowa>
-            <WartoscNetto>200.00</WartoscNetto>
-            <StawkaPodatku>23</StawkaPodatku>
-            <KwotaPodatku>46.00</KwotaPodatku>
-            <WartoscBrutto>246.00</WartoscBrutto>
-        </Pozycja>
-    </Pozycje>
-    <Podsumowanie>
-        <LiczbaPozycji>1</LiczbaPozycji>
-        <WartoscNetto>200.00</WartoscNetto>
-        <KwotaPodatku>46.00</KwotaPodatku>
-        <WartoscBrutto>246.00</WartoscBrutto>
-    </Podsumowanie>
+  <Naglowek>
+    <KodFormularza><Kod>FA</Kod><WersjaSchemy>1-0E</WersjaSchemy></KodFormularza>
+    <WariantFormularza>1</WariantFormularza>
+    <DataWystawienia>2024-01-15</DataWystawienia>
+    <MiejsceWystawienia>Warszawa</MiejsceWystawienia>
+    <DataSprzedazy>2024-01-15</DataSprzedazy>
+    <KodWaluty>PLN</KodWaluty>
+    <P_1>FV/2024/001</P_1>
+    <P_2>FV/2024/001</P_2>
+  </Naglowek>
+  <Sprzedawca>
+    <DaneIdentyfikacyjne><NIP>123456789</NIP><Nazwa>Test Company</Nazwa></DaneIdentyfikacyjne>
+    <Adres><KodKraju>PL</KodKraju><Miejscowosc>Warszawa</Miejscowosc><KodPocztowy>00-001</KodPocztowy><Poczta>Warszawa</Poczta></Adres>
+  </Sprzedawca>
+  <Nabywca>
+    <DaneIdentyfikacyjne><NIP>7792439665</NIP><Nazwa>Client Company</Nazwa></DaneIdentyfikacyjne>
+    <Adres><KodKraju>PL</KodKraju><Miejscowosc>Krakow</Miejscowosc><KodPocztowy>30-001</KodPocztowy><Poczta>Krakow</Poczta></Adres>
+  </Nabywca>
+  <Pozycje>
+    <Pozycja>
+      <LpSprzedazy>1</LpSprzedazy>
+      <Nazwa>Test Product</Nazwa>
+      <Miara>szt.</Miara>
+      <Ilosc>2</Ilosc>
+      <CenaJednostkowa>100.00</CenaJednostkowa>
+      <WartoscNetto>200.00</WartoscNetto>
+      <StawkaPodatku>23</StawkaPodatku>
+      <KwotaPodatku>46.00</KwotaPodatku>
+      <WartoscBrutto>246.00</WartoscBrutto>
+    </Pozycja>
+  </Pozycje>
+  <Podsumowanie>
+    <LiczbaPozycji>1</LiczbaPozycji>
+    <WartoscNetto>200.00</WartoscNetto>
+    <KwotaPodatku>46.00</KwotaPodatku>
+    <WartoscBrutto>246.00</WartoscBrutto>
+  </Podsumowanie>
 </Faktura>"""
-    
+
     response = client.post(
         "/api/validate/xml",
-        files={"file": ("test_invalid.xml", invalid_xml, "text/xml")}
+        files={"file": ("test_invalid.xml", invalid_xml, "text/xml")},
     )
-    
     assert response.status_code == 200
     data = response.json()
-    assert data["ok"] == False
+    assert data["ok"] is False
     assert data["filename"] == "test_invalid.xml"
     assert len(data["errors"]) > 0
-    assert data["summary"]["is_compliant"] == False
+    assert data["summary"]["is_compliant"] is False
 
 
-def test_validate_endpoint_no_file():
-    """Test validation endpoint without file"""
-    
+def test_validate_endpoint_no_file() -> None:
     response = client.post("/api/validate/xml")
-    
-    # Should return 422 for missing file
     assert response.status_code == 422

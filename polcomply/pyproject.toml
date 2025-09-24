@@ -40,6 +40,9 @@ dev = [
     "ruff>=0.1.0",
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
+    "lxml-stubs>=0.5.1",
+    "pandas-stubs>=2.1.0.230807",
+    "types-PyYAML>=6.0.12.12",
 ]
 
 [project.scripts]

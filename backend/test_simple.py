@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Simple test script for FA3Validator"""
+# ruff: noqa: E402
 
 import sys
 import os

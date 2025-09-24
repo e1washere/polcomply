@@ -6,7 +6,7 @@ Licensed under the Business Source License 1.1 (BSL).
 See LICENSE file for full terms.
 """
 
-from validators.xsd import XSDValidator
+from polcomply.validators.xsd import XSDValidator
 import tempfile
 from pathlib import Path
 
@@ -96,7 +96,7 @@ def main():
 
         # Test convenience function
         print("\n🧪 Testing convenience function...")
-        from validators.xsd import validate_fax
+        from polcomply.validators.xsd import validate_fax
 
         errors = validate_fax(valid_xml, schema_path)
         print(f"✅ Convenience function: {len(errors)} errors")
