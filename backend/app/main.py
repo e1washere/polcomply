@@ -13,10 +13,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from starlette.middleware.sessions import SessionMiddleware
 import logging
+from pathlib import Path
 
 from app.config import settings
 from app.database import engine, Base
-from app.routers import auth, invoices, vat, ai, companies, validate
+from app.routers import auth, invoices, vat, ai, companies, validate, lead
 from app.utils.logging import setup_logging
 
 # Setup logging
@@ -72,13 +73,20 @@ app.include_router(companies.router, prefix="/v1/companies", tags=["Companies"])
 app.include_router(invoices.router, prefix="/v1/invoices", tags=["Invoices"])
 app.include_router(vat.router, prefix="/v1/vat", tags=["VAT"])
 app.include_router(ai.router, prefix="/v1/ai", tags=["AI Assistant"])
+app.include_router(lead.router)
+
+
+# Resolve absolute static directory (backend/static)
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend
+STATIC_DIR = BASE_DIR / "static"  # backend/static
 
 
 # Upload page (root endpoint)
 @app.get("/")
 async def upload_page():
     """Serve the XML upload page"""
-    return FileResponse("static/upload.html")
+    upload_file = STATIC_DIR / "upload.html"
+    return FileResponse(str(upload_file))
 
 
 # API info endpoint
@@ -99,7 +107,7 @@ async def health_check():
 
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
 # Startup event
