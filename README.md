@@ -62,6 +62,19 @@ polcomply map data.csv --output invoice.xml
 polcomply --help
 ```
 
+### Backend (local)
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+
+# from repository root
+export PYTHONPATH=backend:.
+python -m uvicorn app.main:app --reload --port 8000 --app-dir backend
+# or:
+# cd backend && python -m uvicorn app.main:app --reload --port 8000
+```
+
 ### API Integration
 
 ```bash
@@ -206,6 +219,10 @@ This project is licensed under the Business Source License 1.1. See [LICENSE](LI
 - [ ] **v0.2.0 (30.09.2025)**: KSeF sandbox UPO + CSV export + demo video
 - [ ] **v0.3.0 (31.10.2025)**: 2 платящих пилота + on-prem connector
 - [ ] **v0.4.0 (31.12.2025)**: 12-20 клиентов (3-8k MRR)
+
+## 📝 Changelog
+
+- v0.1.0: FA-3 validator stable (76 passed, 6 skipped); CLI/API; landing; Stripe links; CI on py311; main protected
 
 ---
 
