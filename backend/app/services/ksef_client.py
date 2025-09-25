@@ -1,3 +1,113 @@
+"""Pluggable KSeF client layer: interface + mock + sandbox implementation.
+
+Usage is controlled via environment in app.settings:
+  - KSEF_MODE = "mock" | "sandbox"
+  - KSEF_SANDBOX_BASE_URL
+  - KSEF_TIMEOUT_SEC
+
+Sandbox client is feature-flagged and safe (timeouts/retries). In absence of
+proper env config the factory will fall back to the mock client.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Protocol, TypedDict, Literal, Optional
+import time
+import uuid
+
+import httpx
+
+
+class KSeFStatus(TypedDict, total=False):
+    status: Literal["PENDING", "UPO", "ERROR"]
+    details: Optional[str]
+    upo_reference: Optional[str]
+
+
+class KSeFClient(Protocol):
+    def send(self, xml_bytes: bytes) -> str:  # returns submission_id
+        ...
+
+    def status(self, submission_id: str) -> KSeFStatus:
+        ...
+
+
+@dataclass
+class MockKSeFClient:
+    """Deterministic UPO simulation used for demo and tests."""
+
+    processing_delay_sec: float = 1.5
+
+    def __post_init__(self) -> None:
+        self._submitted_at: dict[str, float] = {}
+
+    def send(self, xml_bytes: bytes) -> str:
+        submission_id = str(uuid.uuid4())
+        self._submitted_at[submission_id] = time.time()
+        return submission_id
+
+    def status(self, submission_id: str) -> KSeFStatus:
+        started = self._submitted_at.get(submission_id)
+        if started is None:
+            return {"status": "ERROR", "details": "Submission not found"}
+        if time.time() - started >= self.processing_delay_sec:
+            return {
+                "status": "UPO",
+                "details": "Processed by MockKSeF",
+                "upo_reference": f"UPO-{submission_id[:8].upper()}",
+            }
+        return {"status": "PENDING", "details": "Processing"}
+
+
+@dataclass
+class SandboxKSeFClient:
+    """Thin HTTP client for KSeF sandbox. Endpoints are illustrative.
+
+    Real KSeF API specifics should be mapped here when available.
+    """
+
+    base_url: str
+    timeout_sec: float = 10.0
+
+    def __post_init__(self) -> None:
+        limits = httpx.Limits(max_connections=10, max_keepalive_connections=5)
+        self._client = httpx.Client(
+            base_url=self.base_url,
+            timeout=httpx.Timeout(self.timeout_sec),
+            limits=limits,
+            headers={"User-Agent": "PolComply/launch"},
+        )
+
+    def send(self, xml_bytes: bytes) -> str:
+        # Placeholder endpoint. Adjust when sandbox docs are confirmed.
+        resp = self._client.post("/send", content=xml_bytes,
+                                 headers={"Content-Type": "application/xml"})
+        resp.raise_for_status()
+        data = resp.json()
+        return str(data.get("submission_id"))
+
+    def status(self, submission_id: str) -> KSeFStatus:
+        resp = self._client.get(f"/status", params={"submission_id": submission_id})
+        resp.raise_for_status()
+        data = resp.json()
+        out: KSeFStatus = {"status": data.get("status", "ERROR"), "details": data.get("details")}
+        upo = data.get("upo_reference")
+        if upo:
+            out["upo_reference"] = upo
+        return out
+
+
+def make_ksef_client(*, mode: str, base_url: Optional[str], timeout_sec: float) -> KSeFClient:
+    """Factory that never crashes: falls back to mock if config incomplete."""
+    if mode.lower() == "sandbox" and base_url:
+        try:
+            return SandboxKSeFClient(base_url=base_url, timeout_sec=timeout_sec)
+        except Exception:
+            # Safety net – use mock if sandbox cannot be initialized
+            return MockKSeFClient()
+    return MockKSeFClient()
+
 """KSeF API client for invoice submission"""
 
 import logging

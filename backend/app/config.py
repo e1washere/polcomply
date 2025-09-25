@@ -30,9 +30,9 @@ class Settings(BaseSettings):
     ALLOWED_HOSTS: List[str] = ["localhost", "api.polcomply.pl"]
 
     # KSeF API
-    KSEF_API_URL: str = "https://ksef-test.mf.gov.pl"
-    KSEF_API_KEY: Optional[str] = None
-    KSEF_CERT_PATH: Optional[str] = None
+    KSEF_MODE: str = "mock"  # mock | sandbox
+    KSEF_SANDBOX_BASE_URL: Optional[str] = None
+    KSEF_TIMEOUT_SEC: float = 10.0
 
     # OpenAI
     OPENAI_API_KEY: Optional[str] = None
