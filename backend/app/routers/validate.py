@@ -3,7 +3,7 @@
 import logging
 import sys
 from pathlib import Path
-from fastapi import APIRouter, UploadFile, HTTPException, status
+from fastapi import APIRouter, UploadFile, HTTPException, status, Request, Response
 
 # Ensure local package import in test/runtime without global install
 repo_root = Path(__file__).resolve().parents[3]
@@ -11,6 +11,8 @@ sys.path.insert(0, str(repo_root))
 
 from polcomply.validators.xsd import XSDValidator  # noqa: E402
 from polcomply.validators.paths import resolve_fa3_schema  # noqa: E402
+from app.config import settings  # noqa: E402
+from app.utils.rate_limit import enforce_limit, increment_validation, client_key  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,7 @@ router = APIRouter(prefix="/api/validate", tags=["validate"])
 
 
 @router.post("/xml")
-async def validate_xml(file: UploadFile):
+async def validate_xml(request: Request, response: Response, file: UploadFile):
     """
     Validate XML file against FA-3 schema
 
@@ -31,6 +33,10 @@ async def validate_xml(file: UploadFile):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only XML files are accepted",
         )
+
+    # Free tier limit per IP+session
+    if settings.DEMO_PAYWALL_ENABLED:
+        enforce_limit(request, settings.FREE_VALIDATIONS_PER_DAY)
 
     # Auto-resolve FA-3 schema
     schema_path = resolve_fa3_schema()
@@ -54,7 +60,7 @@ async def validate_xml(file: UploadFile):
         # Format response
         is_valid = len(errors) == 0
 
-        return {
+        result = {
             "ok": is_valid,
             "filename": file.filename,
             "errors": [
@@ -73,6 +79,9 @@ async def validate_xml(file: UploadFile):
                 "schema_version": "FA-3",
             },
         }
+        if settings.DEMO_PAYWALL_ENABLED:
+            increment_validation(client_key(request))
+        return result
 
     except Exception as e:
         logger.error(f"Validation error: {str(e)}")

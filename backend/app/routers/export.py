@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Literal, Any, Dict
@@ -8,6 +8,7 @@ from io import BytesIO
 
 from app.services.exporters.fakturownia_csv import export_fakturownia_csv
 from app.services.exporters.wfirma_csv import export_wfirma_csv
+from app.config import settings
 
 
 router = APIRouter(prefix="/api", tags=["export"])
@@ -19,7 +20,11 @@ class ExportRequest(BaseModel):
 
 
 @router.post("/export")
-async def export_invoice(req: ExportRequest):
+async def export_invoice(req: ExportRequest, request: Request):
+    # Paywall: block on Free plan
+    if settings.DEMO_PAYWALL_ENABLED:
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                            detail="Free plan: export unavailable. Upgrade to Starter/Growth.")
     try:
         if req.target == "fakturownia":
             csv_text = export_fakturownia_csv(req.invoice)

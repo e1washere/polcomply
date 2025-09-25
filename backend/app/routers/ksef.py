@@ -45,6 +45,9 @@ class KSeFStatusResponse(BaseModel):
 
 @router.post("/send", response_model=KSeFSendResponse)
 async def send_to_ksef(request: KSeFSendRequest):
+    if settings.DEMO_PAYWALL_ENABLED:
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                            detail="Free plan: UPO (KSeF) is unavailable. Upgrade to Starter/Growth.")
     """
     Send FA-3 XML to KSeF sandbox for UPO generation demo
     """
@@ -66,6 +69,9 @@ async def send_to_ksef(request: KSeFSendRequest):
 
 @router.get("/status", response_model=KSeFStatusResponse)
 async def get_ksef_status(submission_id: str):
+    if settings.DEMO_PAYWALL_ENABLED:
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                            detail="Free plan: UPO (KSeF) is unavailable. Upgrade to Starter/Growth.")
     """
     Get status of KSeF submission
     """

@@ -47,6 +47,8 @@ class Settings(BaseSettings):
 
     # Rate limiting
     RATE_LIMIT_PER_MINUTE: int = 100
+    FREE_VALIDATIONS_PER_DAY: int = 5
+    DEMO_PAYWALL_ENABLED: bool = True
 
     class Config:
         env_file = ".env"
