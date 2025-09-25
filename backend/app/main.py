@@ -18,6 +18,7 @@ from pathlib import Path
 from app.config import settings
 from app.database import engine, Base
 from app.routers import auth, invoices, vat, ai, companies, validate, lead, ksef
+from app.routers import export as export_router
 from app.utils.logging import setup_logging
 
 # Setup logging
@@ -75,6 +76,7 @@ app.include_router(invoices.router, prefix="/v1/invoices", tags=["Invoices"])
 app.include_router(vat.router, prefix="/v1/vat", tags=["VAT"])
 app.include_router(ai.router, prefix="/v1/ai", tags=["AI Assistant"])
 app.include_router(lead.router)
+app.include_router(export_router.router)
 
 
 # Resolve absolute static directory (backend/static)
